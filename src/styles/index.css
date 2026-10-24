@@ -1,0 +1,621 @@
+/* ==========================================================================
+   Vantage Loop - Corbel Design System (Full Redesign)
+   Inspire by Corbel (demo.codeandchill.store/corbel)
+   Typography: Urbanist & JetBrains Mono
+   Aesthetics: Slate Obsidian Ambient Dark & Warm Minimal Mono Light
+   ========================================================================== */
+
+:root,
+[data-theme="dark"] {
+  --color-scheme: dark;
+  
+  /* Corbel Typography */
+  --font: 'Urbanist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --display: var(--font);
+  --mono: 'JetBrains Mono', monospace;
+  
+  /* Font Sizes */
+  --fs-2xs: 11px;
+  --fs-xs: 12px;
+  --fs-sm: 12.5px;
+  --fs-md: 13.5px;
+  --fs-base: 14px;
+  --fs-lg: 15px;
+  --fs-xl: 17px;
+  --fs-2xl: 20px;
+  --fs-3xl: 22px;
+  --fs-4xl: 26px;
+  --fs-display: 34px;
+
+  /* Corbel Dark Slate Obsidian Backgrounds & Surfaces */
+  --bg: #0c1216;
+  --mesh-a: rgba(70, 140, 200, 0.16);
+  --mesh-b: rgba(46, 160, 128, 0.12);
+  --mesh-c: rgba(230, 120, 95, 0.10);
+  
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-2: rgba(255, 255, 255, 0.09);
+  --glass-3: #1d272e;
+  --rim: rgba(255, 255, 255, 0.08);
+  --float: #1a242b;
+  --surface: #172129;
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --well: rgba(255, 255, 255, 0.06);
+  
+  /* Refined Hairline Borders */
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.16);
+
+  /* Shadows */
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 48px -30px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.35), 0 14px 32px -16px rgba(0, 0, 0, 0.75);
+  --shadow-pop: 0 24px 60px -18px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  /* Corbel Text Hierarchy */
+  --text: #ededeb;
+  --muted: #a7b3bb;
+  --faint: #8d9aa3;
+  
+  /* Primary & Pills */
+  --primary: #79b6e3;
+  --primary-ink: #0c1216;
+  --primary-soft: rgba(121, 182, 227, 0.16);
+  --on-primary: #0c1216;
+  
+  --pill: #ededeb;
+  --on-pill: #0c1216;
+  
+  --dock: rgba(23, 33, 41, 0.92);
+  --on-dock: #ededeb;
+  
+  /* Corbel Signature Pastel Colors */
+  --sky: #79b6e3;
+  --sky-soft: rgba(121, 182, 227, 0.16);
+  --mint: #6fd3b0;
+  --mint-soft: rgba(111, 211, 176, 0.16);
+  --coral: #f2937c;
+  --coral-soft: rgba(242, 147, 124, 0.16);
+  --lemon: #e8bd62;
+  --lemon-soft: rgba(232, 189, 98, 0.16);
+  --ocean: #24597a;
+  --on-tile: #ededeb;
+
+  /* Semantic Mappings for Loopholes & Enhancements */
+  --type-loophole: var(--coral);
+  --type-loophole-bg: var(--coral-soft);
+  --type-loophole-border: rgba(242, 147, 124, 0.28);
+  
+  --type-enhancement: var(--mint);
+  --type-enhancement-bg: var(--mint-soft);
+  --type-enhancement-border: rgba(111, 211, 176, 0.28);
+
+  --status-red: var(--coral);
+  --status-red-bg: var(--coral-soft);
+  --status-green: var(--mint);
+  --status-green-bg: var(--mint-soft);
+  
+  --priority-critical: var(--coral);
+  --priority-critical-bg: var(--coral-soft);
+  --priority-high: var(--lemon);
+  --priority-high-bg: var(--lemon-soft);
+  --priority-medium: var(--sky);
+  --priority-medium-bg: var(--sky-soft);
+  --priority-low: var(--muted);
+  --priority-low-bg: var(--well);
+
+  --status-ideation: var(--sky);
+  --status-ideation-bg: var(--sky-soft);
+  --status-discussion: var(--lemon);
+  --status-discussion-bg: var(--lemon-soft);
+  --status-planned: #a78bfa;
+  --status-planned-bg: rgba(167, 139, 250, 0.16);
+  --status-progress: #60a5fa;
+  --status-progress-bg: rgba(96, 165, 250, 0.16);
+  --status-done: var(--mint);
+  --status-done-bg: var(--mint-soft);
+
+  /* Radii */
+  --r-xs: 8px;
+  --r-sm: 14px;
+  --r: 20px;
+  --r-lg: 26px;
+  --r-pill: 999px;
+
+  /* Aliases for legacy component compatibility */
+  --bg-app: var(--bg);
+  --bg-sidebar: var(--surface);
+  --bg-topbar: var(--glass-3);
+  --bg-surface: var(--surface);
+  --bg-card: var(--glass);
+  --bg-card-hover: var(--surface-2);
+  --bg-card-glass: var(--glass);
+  --bg-input: var(--surface);
+  --bg-dropdown: var(--float);
+  --bg-modal-backdrop: rgba(6, 10, 14, 0.75);
+  
+  --border-subtle: var(--line);
+  --border-card: var(--line);
+  --border-card-hover: var(--line-2);
+  --border-focus: var(--text);
+  
+  --text-primary: var(--text);
+  --text-secondary: var(--muted);
+  --text-muted: var(--faint);
+  --text-inverse: var(--on-pill);
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-card: var(--shadow);
+  --shadow-card-hover: var(--shadow-lift);
+  --shadow-modal: var(--shadow-pop);
+}
+
+/* Corbel Warm Mono Light Theme */
+[data-theme="light"] {
+  --color-scheme: light;
+  
+  --bg: #efefed;
+  --mesh-a: #e2e8f0;
+  --mesh-b: #e8f0ec;
+  --mesh-c: #f3e8e2;
+  
+  --glass: rgba(255, 255, 255, 0.65);
+  --glass-2: rgba(255, 255, 255, 0.88);
+  --glass-3: #ffffff;
+  --rim: rgba(255, 255, 255, 0.95);
+  --float: #fcfcfb;
+  --surface: #fcfcfb;
+  --surface-2: rgba(255, 255, 255, 0.55);
+  --well: rgba(17, 17, 17, 0.05);
+  
+  --line: rgba(17, 17, 17, 0.08);
+  --line-2: rgba(17, 17, 17, 0.15);
+
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 20px 40px -25px rgba(0, 0, 0, 0.08);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.05), 0 12px 28px -14px rgba(0, 0, 0, 0.1);
+  --shadow-pop: 0 20px 50px -15px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  --text: #121212;
+  --muted: #4f4f4c;
+  --faint: #636360;
+  
+  --primary: #121212;
+  --primary-ink: #ffffff;
+  --primary-soft: rgba(18, 18, 18, 0.08);
+  --on-primary: #ffffff;
+  
+  --pill: #121212;
+  --on-pill: #fcfcfb;
+  
+  --dock: rgba(255, 255, 255, 0.88);
+  --on-dock: #172129;
+  
+  --sky: #2a6f9a;
+  --sky-soft: #d6e8f5;
+  --mint: #22735c;
+  --mint-soft: #d5eee4;
+  --coral: #b1412a;
+  --coral-soft: #f8e1da;
+  --lemon: #85580a;
+  --lemon-soft: #f5ead2;
+  --ocean: #173f5f;
+  --on-tile: #121212;
+
+  --type-loophole: var(--coral);
+  --type-loophole-bg: var(--coral-soft);
+  --type-loophole-border: rgba(177, 65, 42, 0.25);
+  
+  --type-enhancement: var(--mint);
+  --type-enhancement-bg: var(--mint-soft);
+  --type-enhancement-border: rgba(34, 115, 92, 0.25);
+
+  --status-red: var(--coral);
+  --status-red-bg: var(--coral-soft);
+  --status-green: var(--mint);
+  --status-green-bg: var(--mint-soft);
+  
+  --priority-critical: var(--coral);
+  --priority-critical-bg: var(--coral-soft);
+  --priority-high: var(--lemon);
+  --priority-high-bg: var(--lemon-soft);
+  --priority-medium: var(--sky);
+  --priority-medium-bg: var(--sky-soft);
+  --priority-low: var(--muted);
+  --priority-low-bg: var(--well);
+
+  --status-ideation: var(--sky);
+  --status-ideation-bg: var(--sky-soft);
+  --status-discussion: var(--lemon);
+  --status-discussion-bg: var(--lemon-soft);
+  --status-planned: #7c3aed;
+  --status-planned-bg: rgba(124, 58, 237, 0.08);
+  --status-progress: #2563eb;
+  --status-progress-bg: rgba(37, 99, 235, 0.08);
+  --status-done: var(--mint);
+  --status-done-bg: var(--mint-soft);
+
+  --bg-app: var(--bg);
+  --bg-sidebar: var(--surface);
+  --bg-topbar: var(--glass-3);
+  --bg-surface: var(--surface);
+  --bg-card: var(--glass);
+  --bg-card-hover: var(--surface-2);
+  --bg-card-glass: var(--glass);
+  --bg-input: #e4e4e1;
+  --bg-dropdown: var(--float);
+  --bg-modal-backdrop: rgba(15, 23, 42, 0.45);
+  
+  --border-subtle: var(--line);
+  --border-card: var(--line);
+  --border-card-hover: var(--line-2);
+  --border-focus: var(--text);
+  
+  --text-primary: var(--text);
+  --text-secondary: var(--muted);
+  --text-muted: var(--faint);
+  --text-inverse: #ffffff;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: var(--shadow);
+  --shadow-card-hover: var(--shadow-lift);
+  --shadow-modal: var(--shadow-pop);
+}
+
+/* ==========================================================================
+   Base Styles & Reset
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: var(--font);
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  transition: background-color 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              color 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ==========================================================================
+   Corbel Ambient Glowing Mesh Background
+   ========================================================================== */
+.mesh {
+  z-index: -1;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: 
+    radial-gradient(circle 800px at 15% 10%, var(--mesh-a) 0%, transparent 70%),
+    radial-gradient(circle 900px at 85% 90%, var(--mesh-b) 0%, transparent 70%),
+    radial-gradient(circle 650px at 75% 20%, var(--mesh-c) 0%, transparent 70%);
+}
+
+/* Typography Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text);
+}
+
+p {
+  color: var(--muted);
+}
+
+code, pre {
+  font-family: var(--mono);
+}
+
+button {
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+input, textarea, select {
+  font-family: var(--font);
+  font-size: var(--fs-md);
+  outline: none;
+  border: 1px solid var(--line);
+  background-color: var(--surface);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 1px var(--text);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* ==========================================================================
+   Corbel Reusable Component Tokens & Utilities
+   ========================================================================== */
+
+/* Buttons */
+.btn {
+  background: var(--glass-2);
+  height: 38px;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  font-weight: 600;
+  font-size: var(--fs-md);
+  white-space: nowrap;
+  border-radius: var(--r-pill);
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+  display: inline-flex;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s ease;
+}
+
+.btn:hover {
+  background: var(--glass-3);
+  transform: translateY(-1px);
+}
+
+.btn--primary,
+.btn--dark {
+  background: var(--pill);
+  color: var(--on-pill);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  font-weight: 700;
+}
+
+.btn--primary:hover,
+.btn--dark:hover {
+  background: var(--text);
+  color: var(--on-pill);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.btn--ghost {
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+}
+
+.btn--ghost:hover {
+  background: var(--well);
+  color: var(--text);
+}
+
+.btn--sm {
+  height: 30px;
+  font-size: var(--fs-xs);
+  padding: 0 12px;
+}
+
+/* Icon Buttons */
+.ibtn {
+  width: 38px;
+  height: 38px;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  background: transparent;
+  border-radius: 50%;
+  flex: none;
+  place-items: center;
+  display: inline-grid;
+  position: relative;
+  transition: background-color 0.2s, color 0.2s, transform 0.15s ease;
+}
+
+.ibtn--glass {
+  background: var(--glass-2);
+  box-shadow: inset 0 0 0 1px var(--rim);
+}
+
+.ibtn:hover {
+  background: var(--glass-3);
+  color: var(--text);
+  transform: scale(1.05);
+}
+
+/* Cards */
+.card {
+  border-radius: var(--r);
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  padding: 20px;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow-lift);
+}
+
+/* Pills & Badges */
+.pill {
+  background: var(--well);
+  height: 24px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  border-radius: var(--r-pill);
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  font-weight: 600;
+  display: inline-flex;
+}
+
+.pill:before {
+  content: "";
+  background: currentColor;
+  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+}
+
+.pill--plain:before {
+  display: none;
+}
+
+.pill--mint {
+  background: var(--mint-soft);
+  color: var(--mint);
+}
+
+.pill--coral {
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+
+.pill--lemon {
+  background: var(--lemon-soft);
+  color: var(--lemon);
+}
+
+.pill--sky {
+  background: var(--sky-soft);
+  color: var(--sky);
+}
+
+/* Segmented Control with Floating Pill */
+.seg {
+  background: var(--well);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  gap: 3px;
+}
+
+.seg button {
+  height: 30px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  border-radius: var(--r-pill);
+  padding: 0 14px;
+  transition: color 0.2s, background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seg button:hover {
+  color: var(--text);
+}
+
+.seg button.active,
+.seg button[aria-selected="true"] {
+  background: var(--float);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 1px var(--line);
+}
+
+/* Stat Tile Backgrounds */
+.tile--sky {
+  background: var(--sky-soft);
+  color: var(--text);
+}
+
+.tile--mint {
+  background: var(--mint-soft);
+  color: var(--text);
+}
+
+.tile--coral {
+  background: var(--coral-soft);
+  color: var(--text);
+}
+
+.tile--lemon {
+  background: var(--lemon-soft);
+  color: var(--text);
+}
+
+/* Live Status Pulse Dot */
+.live {
+  background: var(--well);
+  height: 32px;
+  color: var(--text);
+  font-size: var(--fs-xs);
+  border-radius: var(--r-pill);
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  font-weight: 600;
+  display: inline-flex;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.live__dot {
+  background: var(--mint);
+  border-radius: 50%;
+  width: 7px;
+  height: 7px;
+  position: relative;
+}
+
+.live__dot:after {
+  content: "";
+  opacity: 0;
+  border: 1.5px solid var(--mint);
+  border-radius: 50%;
+  animation: 2.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite ping;
+  position: absolute;
+  inset: -4px;
+}
+
+@keyframes ping {
+  0% { opacity: 0.9; transform: scale(0.4); }
+  80%, 100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* Animated Odometer / Numerical Counters */
+.stat__val {
+  font-family: var(--display);
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}

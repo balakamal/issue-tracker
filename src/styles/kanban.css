@@ -1,0 +1,429 @@
+/* ==========================================================================
+   Vantage Loop - Corbel Kanban Board Styles
+   (demo.codeandchill.store/corbel Inspired)
+   ========================================================================== */
+
+.kanban-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: calc(100vh - 110px);
+}
+
+/* View Toolbar */
+.view-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.view-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.view-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-box-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search-input {
+  height: 34px;
+  padding: 0 14px 0 34px;
+  font-size: var(--fs-xs);
+  border-radius: var(--r-pill);
+  background-color: var(--glass-2);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 0 1px var(--rim);
+  color: var(--text);
+  width: 220px;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  width: 260px;
+  background-color: var(--glass-3);
+  border-color: var(--text);
+}
+
+.toolbar-item-count {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--well);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 1px var(--line);
+  white-space: nowrap;
+}
+
+/* Corbel Segmented Control */
+.segmented-control {
+  background: var(--well);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.segmented-btn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  background: transparent;
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.segmented-btn:hover {
+  color: var(--text);
+}
+
+.segmented-btn.active {
+  background: var(--float);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 1px var(--line);
+  font-weight: 700;
+}
+
+/* Filter Selects */
+.filter-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.filter-select-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.filter-select {
+  height: 34px;
+  padding: 0 12px 0 28px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  border-radius: var(--r-pill);
+  background-color: var(--glass-2);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 0 1px var(--rim);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.filter-select:hover {
+  background-color: var(--glass-3);
+  border-color: var(--line-2);
+}
+
+/* Kanban Board Columns Grid */
+.kanban-columns-grid {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.kanban-column {
+  background-color: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 300px;
+  min-width: 270px;
+  flex: 1 0 270px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  border: 1px solid var(--line);
+}
+
+@media (min-width: 1540px) {
+  .kanban-column {
+    flex: 1 1 0;
+    min-width: 250px;
+  }
+}
+
+.kanban-column.drag-over {
+  border-color: var(--primary);
+  background-color: var(--sky-soft);
+  box-shadow: inset 0 0 0 1.5px var(--primary), var(--shadow-lift);
+}
+
+/* Column Header */
+.kanban-column-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.column-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.column-color-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.column-title-text {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.column-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  background-color: var(--well);
+  color: var(--muted);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.column-add-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.column-add-btn:hover {
+  background-color: var(--well);
+  color: var(--text);
+}
+
+/* Column Cards Scroll Area */
+.kanban-cards-list {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 80px;
+}
+
+/* Minimal Empty Column State */
+.kanban-empty-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  margin: 4px 0;
+  transition: all 0.2s ease;
+}
+
+.kanban-empty-column:hover {
+  border-color: var(--primary);
+  background-color: var(--sky-soft);
+}
+
+.column-empty-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  transition: all 0.15s ease;
+}
+
+.column-empty-add-btn:hover {
+  color: var(--text);
+}
+
+/* Mobile Stage Selector Pills */
+.kanban-mobile-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 2px 8px 2px;
+  scrollbar-width: none;
+}
+
+.kanban-mobile-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-stage-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  background-color: var(--glass-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.mobile-stage-tab-btn:hover {
+  color: var(--text);
+}
+
+.mobile-stage-tab-btn.active {
+  background-color: var(--pill);
+  color: var(--on-pill);
+  border-color: transparent;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Mobile Responsive Adjustments for Toolbar and Kanban Board
+   ========================================================================== */
+@media (max-width: 768px) {
+  .kanban-view-container {
+    gap: 10px;
+    height: auto;
+    min-height: calc(100vh - 150px);
+  }
+
+  .view-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .view-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .segmented-control {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .segmented-btn {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 0 6px;
+    font-size: 11px;
+    height: 30px;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .segmented-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .filter-select-wrapper {
+    flex-shrink: 0;
+  }
+
+  .filter-select {
+    width: 112px;
+    height: 30px;
+    padding-left: 24px;
+    padding-right: 16px;
+    font-size: 11px;
+  }
+
+  .view-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .search-box-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search-input {
+    width: 100%;
+    height: 32px;
+  }
+
+  .search-input:focus {
+    width: 100%;
+  }
+
+  .toolbar-item-count {
+    display: none;
+  }
+
+  .kanban-mobile-tabs {
+    padding: 2px 0 6px 0;
+    gap: 6px;
+  }
+
+  .mobile-stage-tab-btn {
+    padding: 5px 12px;
+    font-size: 11.5px;
+  }
+
+  .kanban-columns-grid {
+    padding-bottom: 70px; /* Room for floating bottom dock */
+  }
+}

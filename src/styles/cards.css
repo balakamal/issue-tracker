@@ -1,0 +1,245 @@
+/* ==========================================================================
+   Vantage Loop - Corbel Cards & Badges
+   (demo.codeandchill.store/corbel Inspired)
+   ========================================================================== */
+
+/* Badges & Pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.badge-sm {
+  padding: 2px 8px;
+  font-size: 10.5px;
+}
+
+/* Type Badges */
+.badge-type-loophole {
+  background-color: var(--type-loophole-bg);
+  color: var(--type-loophole);
+  box-shadow: inset 0 0 0 1px var(--type-loophole-border);
+}
+
+.badge-type-enhancement {
+  background-color: var(--type-enhancement-bg);
+  color: var(--type-enhancement);
+  box-shadow: inset 0 0 0 1px var(--type-enhancement-border);
+}
+
+/* Priority Badges */
+.badge-priority-critical {
+  background-color: var(--priority-critical-bg);
+  color: var(--priority-critical);
+}
+
+.badge-priority-high {
+  background-color: var(--priority-high-bg);
+  color: var(--priority-high);
+}
+
+.badge-priority-medium {
+  background-color: var(--priority-medium-bg);
+  color: var(--priority-medium);
+}
+
+.badge-priority-low {
+  background-color: var(--priority-low-bg);
+  color: var(--priority-low);
+}
+
+/* Privacy Badges */
+.badge-privacy-private {
+  background-color: var(--lemon-soft);
+  color: var(--lemon);
+}
+
+.badge-privacy-project {
+  background-color: var(--mint-soft);
+  color: var(--mint);
+}
+
+/* Project Chip */
+.project-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--well);
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* Corbel Task Card */
+.task-card {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              border-color 0.2s ease, 
+              box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-2);
+  box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow-lift);
+}
+
+.task-card.is-dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+/* Card Header */
+.task-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-quick-menu-btn {
+  color: var(--muted);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.card-quick-menu-btn:hover {
+  color: var(--text);
+  background-color: var(--well);
+}
+
+/* Card Title & Snippet */
+.task-card-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+  transition: color 0.15s ease;
+  letter-spacing: -0.01em;
+}
+
+.task-card:hover .task-card-title {
+  color: var(--primary);
+}
+
+.task-card-desc {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Checklist Progress in Card */
+.card-checklist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: var(--well);
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.card-checklist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.checklist-progress-bar-track {
+  height: 5px;
+  width: 100%;
+  background-color: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.checklist-progress-bar-fill {
+  height: 100%;
+  background: var(--sky);
+  border-radius: 999px;
+  transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.checklist-progress-bar-fill.complete {
+  background: var(--mint);
+}
+
+/* Card Footer */
+.task-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.card-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-meta-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.card-assignee-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.assignee-avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 2px var(--surface);
+  user-select: none;
+}
