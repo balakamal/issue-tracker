@@ -68,13 +68,13 @@ export function App() {
       {/* Corbel Ambient Glowing Mesh Background */}
       <div className="mesh" aria-hidden="true" />
 
-      {/* Floating Left Dock Navigation */}
-      <Sidebar onOpenFinder={() => setIsFinderOpen(true)} />
+      {/* Full-Width Topbar Header: Branding Truly at Top-Left, Profile at Top-Right */}
+      <Topbar onOpenFinder={() => setIsFinderOpen(true)} />
 
-      {/* Main Content Area */}
-      <div className="main-wrapper">
-        {/* Corbel Topbar with Pill Navigation & Live Sync */}
-        <Topbar onOpenFinder={() => setIsFinderOpen(true)} />
+      {/* Main Workspace Body with Left Dock and Content Area */}
+      <div className="workspace-body">
+        {/* Floating Left Dock Navigation */}
+        <Sidebar onOpenFinder={() => setIsFinderOpen(true)} />
 
         {/* Scrollable View Container */}
         <main className="main-content-scrollable">

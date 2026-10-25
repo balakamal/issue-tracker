@@ -458,6 +458,98 @@
   height: 100%;
 }
 
+/* Corbel Single-Row High-Efficiency Toolbar */
+.tickets-toolbar-single {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  min-height: 48px;
+}
+
+.tickets-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.tickets-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.compact-chips-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.compact-selects-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.compact-select {
+  height: 32px;
+  background: var(--glass-2);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 0 1px var(--rim);
+  border-radius: var(--r-pill);
+  padding: 0 10px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.compact-select:hover {
+  color: var(--text);
+  background: var(--glass-3);
+}
+
+.compact-select:focus {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.compact-search {
+  max-width: 220px;
+}
+
+.compact-search .search-input {
+  height: 32px;
+  font-size: var(--fs-xs);
+  padding-left: 30px;
+  padding-right: 28px;
+}
+
+.compact-clear {
+  height: 32px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.compact-create-btn {
+  height: 34px !important;
+  padding: 0 14px !important;
+  font-size: var(--fs-xs) !important;
+  font-weight: 700 !important;
+  gap: 6px !important;
+}
+
 .tickets-toolbar-container {
   display: flex;
   flex-direction: column;
@@ -490,6 +582,129 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
+}
+
+/* Interactive Project Selector inside Breadcrumb */
+.breadcrumb-project-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumb-project-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--glass-2);
+  box-shadow: inset 0 0 0 1px var(--rim);
+  border: 1px solid var(--line);
+  padding: 3px 10px 3px 8px;
+  border-radius: var(--r-pill);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.breadcrumb-project-btn:hover {
+  background: var(--glass-3);
+  border-color: var(--line-2);
+  transform: translateY(-1px);
+}
+
+.breadcrumb-project-name {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb-chev {
+  color: var(--faint);
+  transition: transform 0.2s ease;
+}
+
+.breadcrumb-chev.open {
+  transform: rotate(180deg);
+}
+
+/* Breadcrumb Project Popover */
+.breadcrumb-project-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 220px;
+  background: var(--float);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 120;
+  animation: popoverFadeIn 0.16s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.breadcrumb-popover-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  padding: 6px 10px 4px;
+}
+
+.breadcrumb-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.breadcrumb-popover-item:hover {
+  background: var(--well);
+}
+
+.breadcrumb-popover-item.active {
+  background: var(--glass-3);
+  font-weight: 600;
+}
+
+.breadcrumb-popover-sep {
+  height: 1px;
+  background: var(--line);
+  margin: 4px 6px;
+}
+
+.breadcrumb-popover-action {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 11.5px;
+  color: var(--primary);
+  font-weight: 600;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 6px;
+}
+
+.breadcrumb-popover-action:hover {
+  background: var(--well);
+  text-decoration: underline;
 }
 
 .breadcrumb-root {
