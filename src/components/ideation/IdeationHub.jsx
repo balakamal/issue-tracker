@@ -178,7 +178,7 @@ export function IdeationHub() {
               Ideation &amp; Discovery Hub
             </h2>
             <span className="badge" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)', fontSize: 10 }}>
-              PalTech Engineering
+              Engineering Hub
             </span>
           </div>
           <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', margin: 0 }}>

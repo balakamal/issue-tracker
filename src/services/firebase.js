@@ -3,6 +3,7 @@ import {
   getFirestore, 
   collection, 
   doc, 
+  getDoc,
   setDoc, 
   getDocs, 
   onSnapshot, 
@@ -10,6 +11,16 @@ import {
   updateDoc,
   writeBatch
 } from 'firebase/firestore';
+import { 
+  getAuth, 
+  signInWithPopup, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  GoogleAuthProvider, 
+  signOut, 
+  onAuthStateChanged 
+} from 'firebase/auth';
 
 const STORAGE_KEY_FIREBASE = 'vantage_loop_firebase_config_v2';
 
@@ -240,5 +251,194 @@ export const firebaseService = {
 
     await batch.commit();
     return true;
+  },
+
+  // Update project members list
+  async updateProjectMembers(projectId, memberIds) {
+    const db = this.getFirestoreInstance();
+    if (!db) return false;
+    try {
+      const projRef = doc(db, 'projects', projectId);
+      await updateDoc(projRef, { memberIds });
+      return true;
+    } catch (e) {
+      console.error('Failed to update project members in Firestore:', e);
+      return false;
+    }
   }
 };
+
+export const firebaseAuthService = {
+  getAuthInstance() {
+    const config = firebaseService.getConfig();
+    if (!config || !config.apiKey || !config.projectId) {
+      return null;
+    }
+    try {
+      const app = getApps().length === 0 ? initializeApp(config) : getApp();
+      return getAuth(app);
+    } catch (err) {
+      console.error('Failed to initialize Firebase Auth:', err);
+      return null;
+    }
+  },
+
+  async signInWithGoogle() {
+    const auth = this.getAuthInstance();
+    if (!auth) {
+      throw new Error('Firebase is not configured. Please connect Firebase credentials in project settings.');
+    }
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    
+    // Sync profile to Firestore
+    const syncedProfile = await this.syncUserProfile(user);
+    return syncedProfile;
+  },
+
+  async signInWithEmail(email, password) {
+    const auth = this.getAuthInstance();
+    if (!auth) {
+      throw new Error('Firebase is not configured. Please connect Firebase credentials in project settings.');
+    }
+    const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+    const profile = await this.syncUserProfile(result.user);
+    return profile;
+  },
+
+  async registerWithEmail(email, password, displayName) {
+    const auth = this.getAuthInstance();
+    if (!auth) {
+      throw new Error('Firebase is not configured. Please connect Firebase credentials in project settings.');
+    }
+    const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
+    if (displayName) {
+      try {
+        await updateProfile(result.user, { displayName: displayName.trim() });
+      } catch (e) {
+        console.warn('Failed to set displayName on Firebase user:', e);
+      }
+    }
+    const profile = await this.syncUserProfile(result.user, 'Employee');
+    return profile;
+  },
+
+  async syncUserProfile(firebaseUser, defaultRole = 'Employee') {
+    const db = firebaseService.getFirestoreInstance();
+    const emailLower = (firebaseUser.email || '').toLowerCase();
+    const isSeedAdmin = 
+      emailLower === 'balakamal.cloud@gmail.com' ||
+      emailLower === 'balakamal@gmail.com' ||
+      emailLower === 'kamal.t@pal.tech';
+    
+    let resolvedRole = isSeedAdmin ? 'Admin' : defaultRole;
+
+    if (db) {
+      try {
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        const existingSnap = await getDoc(userRef);
+        if (existingSnap.exists()) {
+          const data = existingSnap.data();
+          if (isSeedAdmin) {
+            resolvedRole = 'Admin';
+          } else if (data.role) {
+            resolvedRole = data.role;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not read existing user role from Firestore:', e);
+      }
+    }
+
+    const userProfile = {
+      id: firebaseUser.uid,
+      name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Team Member',
+      email: firebaseUser.email || '',
+      photoURL: firebaseUser.photoURL || null,
+      avatarColor: '#0077E6',
+      role: resolvedRole,
+      lastLogin: new Date().toISOString()
+    };
+
+    if (db) {
+      try {
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        await setDoc(userRef, userProfile, { merge: true });
+      } catch (err) {
+        console.warn('Could not sync user profile to Firestore:', err);
+      }
+    }
+    return userProfile;
+  },
+
+  async updateUserRole(userId, newRole) {
+    const db = firebaseService.getFirestoreInstance();
+    if (!db) return false;
+    try {
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, { role: newRole });
+      return true;
+    } catch (err) {
+      console.error('Failed to update user role in Firestore:', err);
+      return false;
+    }
+  },
+
+  async adminCreateUser(userData) {
+    const db = firebaseService.getFirestoreInstance();
+    if (!db) return null;
+    try {
+      const userRef = doc(db, 'users', userData.id);
+      await setDoc(userRef, {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role || 'Employee',
+        avatarColor: userData.avatarColor || '#0077E6',
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+      return userData;
+    } catch (err) {
+      console.error('Failed to save admin-created user to Firestore:', err);
+      return null;
+    }
+  },
+
+  async signOutUser() {
+    const auth = this.getAuthInstance();
+    if (auth) {
+      await signOut(auth);
+    }
+  },
+
+  onAuthStateChanged(callback) {
+    const auth = this.getAuthInstance();
+    if (!auth) {
+      callback(null);
+      return () => {};
+    }
+    return onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const profile = await this.syncUserProfile(firebaseUser);
+          callback(profile);
+        } catch {
+          const isSeedAdmin = (firebaseUser.email || '').toLowerCase() === 'balakamal.cloud@gmail.com';
+          callback({
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Team Member',
+            email: firebaseUser.email || '',
+            photoURL: firebaseUser.photoURL || null,
+            avatarColor: '#0077E6',
+            role: isSeedAdmin ? 'Admin' : 'Employee'
+          });
+        }
+      } else {
+        callback(null);
+      }
+    });
+  }
+};
+

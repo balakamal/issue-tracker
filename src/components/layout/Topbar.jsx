@@ -1,18 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Plus, 
-  ShieldCheck, 
   LogOut, 
   Layers, 
   ChevronDown,
   Sparkles,
-  ShieldAlert,
   Search,
-  Check
+  Check,
+  Users,
+  FolderKanban,
+  Shield
 } from 'lucide-react';
 import { useTasks } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar } from '../common/Avatar';
+import { AppLogo } from '../common/AppLogo';
 
 export function Topbar({ onOpenFinder }) {
   const { 
@@ -24,6 +26,8 @@ export function Topbar({ onOpenFinder }) {
     setSelectedProjectId,
     setIsCreateModalOpen,
     setCreateInitialStage,
+    setIsProjectManagerOpen,
+    setIsUserManagementOpen,
     isFirebaseConnected,
     syncStatusMessage
   } = useTasks();
@@ -66,13 +70,10 @@ export function Topbar({ onOpenFinder }) {
     <header className="top">
       {/* Brand & Project Selector */}
       <div className="brand-wrap">
-        <div className="brand" title="InnovateX Enhancements & Loopholes">
-          <span className="brand__mark">
-            <ShieldCheck size={18} />
-          </span>
+        <div className="brand" title="Issue Tracker">
+          <AppLogo size={32} />
           <span className="brand__txt">
-            <b>InnovateX</b>
-            <small>Enhancements &amp; Loopholes</small>
+            <b>Issue Tracker</b>
           </span>
         </div>
 
@@ -174,7 +175,7 @@ export function Topbar({ onOpenFinder }) {
             className="me" 
             onClick={() => setIsProfileOpen(prev => !prev)}
             aria-label={`Profile: ${currentUser.name}`}
-            title={`Signed in as ${currentUser.name} (${currentUser.role})`}
+            title={`Signed in as ${currentUser.name}`}
           >
             <Avatar user={currentUser} size={34} showTooltip={false} />
           </button>
@@ -185,18 +186,50 @@ export function Topbar({ onOpenFinder }) {
                 <Avatar user={currentUser} size={40} showTooltip={false} />
                 <div className="profile-meta">
                   <div className="profile-name">{currentUser.name}</div>
-                  <div className="profile-role">{currentUser.role}</div>
-                  <div className="profile-email">{currentUser.email || `${currentUser.username || 'user'}@innovatex.internal`}</div>
+                  <div className="profile-email">{currentUser.email || `${currentUser.username || 'user'}@issuetracker.internal`}</div>
                 </div>
               </div>
 
-              <div className="profile-popover-status">
-                <span className="pill pill--mint" style={{ height: 22, fontSize: 11 }}>
-                  Enterprise Session Active
+              <div className="profile-popover-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>Role</span>
+                <span 
+                  className={`pill ${currentUser.role === 'Admin' ? 'pill--sky' : currentUser.role === 'Lead' ? 'pill--purple' : 'pill--mint'}`}
+                  style={{ height: 22, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}
+                >
+                  {currentUser.role === 'Admin' && <Shield size={11} style={{ marginRight: 4 }} />}
+                  {currentUser.role || 'Employee'}
                 </span>
               </div>
 
               <div className="profile-popover-footer">
+                {currentUser.role === 'Admin' && (
+                  <button 
+                    className="profile-menu-action-btn"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      setIsUserManagementOpen(true);
+                    }}
+                    title="Manage Workspace Users and Roles"
+                  >
+                    <Users size={14} color="var(--sky)" />
+                    <span>User Management</span>
+                  </button>
+                )}
+
+                {(currentUser.role === 'Admin' || currentUser.role === 'Lead') && (
+                  <button 
+                    className="profile-menu-action-btn"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      setIsProjectManagerOpen(true);
+                    }}
+                    title="Project Classifications & Workspaces"
+                  >
+                    <FolderKanban size={14} color="var(--mint)" />
+                    <span>Manage Projects</span>
+                  </button>
+                )}
+
                 <button 
                   className="profile-logout-btn"
                   onClick={() => {

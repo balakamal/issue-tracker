@@ -252,7 +252,7 @@ export function ListView() {
 
                           <div className="list-card-aside" onClick={(e) => e.stopPropagation()}>
                             {/* Assignee Avatar */}
-                            <div className="list-assignee-wrap" title={assignee ? `${assignee.name} (${assignee.role})` : "Unassigned"}>
+                            <div className="list-assignee-wrap" title={assignee ? assignee.name : "Unassigned"}>
                               <Avatar user={assignee} size={28} showTooltip={false} />
                             </div>
 

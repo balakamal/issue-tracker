@@ -9,6 +9,7 @@ import { AnalyticsDashboard } from './components/analytics/AnalyticsDashboard';
 import { TaskDetailDrawer } from './components/task-detail/TaskDetailDrawer';
 import { CreateTaskModal } from './components/modals/CreateTaskModal';
 import { ProjectManagerModal } from './components/modals/ProjectManagerModal';
+import { UserManagementModal } from './components/modals/UserManagementModal';
 import { FinderModal } from './components/common/FinderModal';
 import { AuthPage } from './components/auth/AuthPage';
 import { useTasks } from './context/TaskContext';
@@ -99,6 +100,7 @@ export function App() {
       <TaskDetailDrawer />
       <CreateTaskModal />
       <ProjectManagerModal />
+      <UserManagementModal />
     </div>
   );
 }

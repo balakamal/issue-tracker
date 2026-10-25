@@ -242,7 +242,7 @@ export function AnalyticsDashboard() {
                         {u.name}
                       </div>
                       <div style={{ fontSize: 10.5, color: 'var(--text-muted)' }}>
-                        {u.role}
+                        {u.email || `@${u.username || 'member'}`}
                       </div>
                     </div>
                   </div>

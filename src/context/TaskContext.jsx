@@ -187,34 +187,58 @@ export function TaskProvider({ children }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createInitialStage, setCreateInitialStage] = useState('ideation');
   const [isProjectManagerOpen, setIsProjectManagerOpen] = useState(false);
+  const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
 
-  // Privacy Rule Engine:
-  // An item is visible if:
-  // 1. isPrivate is false (it is project-classified and team visible)
-  // 2. OR isPrivate is true AND task.createdBy === currentUser.id
+  // Filter projects by user role and project membership
+  // Admin sees all projects; others only see projects they created or were added to
+  const accessibleProjects = useMemo(() => {
+    if (!currentUser) return [];
+    if (currentUser.role === 'Admin') return projects;
+    return projects.filter(p => {
+      if (p.createdBy === currentUser.id) return true;
+      if (Array.isArray(p.memberIds) && p.memberIds.includes(currentUser.id)) return true;
+      return false;
+    });
+  }, [projects, currentUser]);
+
+  // Privacy & Access Rule Engine:
+  // 1. Private tasks are strictly visible ONLY to the author
+  // 2. Public tasks:
+  //    - Admin can view all
+  //    - Others can only view if they are a member of the task's project, or task author/assignee
   const visibleTasks = useMemo(() => {
     return tasks.filter(task => {
-      // Privacy check
+      // 1. Private check
       if (task.isPrivate && task.createdBy !== currentUser?.id) {
         return false;
       }
 
-      // Project filter
+      // 2. Project accessibility check:
+      // Non-admins cannot see tasks belonging to projects they aren't members of
+      if (currentUser?.role !== 'Admin') {
+        const isProjectAccessible = accessibleProjects.some(p => p.id === task.projectId);
+        const isAuthorOrAssignee = task.createdBy === currentUser?.id || task.assigneeId === currentUser?.id;
+        if (!isProjectAccessible && !isAuthorOrAssignee) {
+          return false;
+        }
+      }
+
+      // 3. Project filter
       if (selectedProjectId !== 'all' && task.projectId !== selectedProjectId) {
         return false;
       }
 
-      // Type filter
+      // 4. Type filter
       if (filterType !== 'all' && task.type !== filterType) {
         return false;
       }
 
-      // Priority filter
+      // 5. Priority filter
       if (filterPriority !== 'all' && task.priority !== filterPriority) {
         return false;
       }
 
-      // Search query filter
+      // 6. Search query filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesTitle = task.title.toLowerCase().includes(q);
@@ -226,7 +250,7 @@ export function TaskProvider({ children }) {
 
       return true;
     });
-  }, [tasks, currentUser, selectedProjectId, filterType, filterPriority, searchQuery]);
+  }, [tasks, accessibleProjects, currentUser, selectedProjectId, filterType, filterPriority, searchQuery]);
 
   // Task Operations
   const addTask = async (taskData) => {
@@ -468,13 +492,20 @@ export function TaskProvider({ children }) {
   };
 
   // Project management
-  const addProject = async ({ name, key, description, color }) => {
+  const addProject = async ({ name, key, description, color, memberIds = [] }) => {
+    const initialMembers = Array.from(new Set([
+      ...(memberIds || []),
+      currentUser?.id
+    ])).filter(Boolean);
+
     const newProj = {
       id: `proj-${Date.now()}`,
       name: name.trim(),
       key: key ? key.trim().toUpperCase() : name.slice(0, 4).toUpperCase(),
       description: description ? description.trim() : '',
-      color: color || '#0077E6'
+      color: color || '#0077E6',
+      createdBy: currentUser?.id,
+      memberIds: initialMembers
     };
     setProjects(prev => [...prev, newProj]);
 
@@ -487,6 +518,25 @@ export function TaskProvider({ children }) {
     }
 
     return newProj;
+  };
+
+  const updateProjectMembers = async (projectId, memberIds) => {
+    let updatedProj = null;
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
+        updatedProj = { ...p, memberIds };
+        return updatedProj;
+      }
+      return p;
+    }));
+
+    if (isFirebaseConnected && updatedProj) {
+      try {
+        await firebaseService.updateProjectMembers(projectId, memberIds);
+      } catch (err) {
+        console.error('Failed to sync project members to Firebase:', err);
+      }
+    }
   };
 
   const updateProject = async (projectId, updates) => {
@@ -557,7 +607,8 @@ export function TaskProvider({ children }) {
     <TaskContext.Provider value={{
       tasks,
       visibleTasks,
-      projects,
+      projects: accessibleProjects,
+      allProjects: projects,
       filterType,
       setFilterType,
       filterPriority,
@@ -585,6 +636,8 @@ export function TaskProvider({ children }) {
       setCreateInitialStage,
       isProjectManagerOpen,
       setIsProjectManagerOpen,
+      isUserManagementOpen,
+      setIsUserManagementOpen,
       theme,
       toggleTheme,
       metrics,
@@ -599,6 +652,7 @@ export function TaskProvider({ children }) {
       toggleReaction,
       addProject,
       updateProject,
+      updateProjectMembers,
       deleteProject,
       // Firebase specific states & handlers
       isFirebaseConnected,

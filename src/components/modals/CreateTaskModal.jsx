@@ -189,7 +189,7 @@ export function CreateTaskModal() {
               >
                 <option value="">Unassigned</option>
                 {users.map(u => (
-                  <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
+                  <option key={u.id} value={u.id}>{u.name}</option>
                 ))}
               </select>
             </div>

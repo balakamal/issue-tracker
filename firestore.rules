@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Is the user logged in with a verified Firebase identity?
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    // Helper: Fetch user document to inspect role
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        getUserData().role == 'Admin' || 
+        request.auth.token.email == 'balakamal.cloud@gmail.com' ||
+        request.auth.token.email == 'kamal.t@pal.tech'
+      );
+    }
+
+    function isLead() {
+      return isAuthenticated() && getUserData().role == 'Lead';
+    }
+
+    // Helper: Is the user the author/creator of this document?
+    function isCreator(data) {
+      return isAuthenticated() && data.createdBy == request.auth.uid;
+    }
+
+    // --- USERS COLLECTION ---
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      // Admin can create or update any user record (for role management).
+      // Individual users can update their own profile.
+      allow write: if isAuthenticated() && (
+        request.auth.uid == userId || 
+        isAdmin()
+      );
+    }
+
+    // --- PROJECTS COLLECTION ---
+    match /projects/{projectId} {
+      // Admin can read all projects. Others can only read if creator or in memberIds
+      allow read: if isAuthenticated() && (
+        isAdmin() || 
+        isCreator(resource.data) || 
+        (resource.data.memberIds != null && request.auth.uid in resource.data.memberIds)
+      );
+
+      // Create: any authenticated user
+      allow create: if isAuthenticated();
+
+      // Update: Admin, Lead, or Creator
+      allow update: if isAuthenticated() && (
+        isAdmin() || 
+        isLead() || 
+        isCreator(resource.data)
+      );
+
+      // Delete: Admin, Lead, or Creator
+      allow delete: if isAuthenticated() && (
+        isAdmin() || 
+        isLead() || 
+        isCreator(resource.data)
+      );
+    }
+
+    // --- TASKS COLLECTION (Loopholes & Enhancements) ---
+    match /tasks/{taskId} {
+      // 1. READ POLICY:
+      // Private tasks: Strictly readable ONLY by the original creator.
+      // Public tasks: Admin can read all; others if creator or member of task's project
+      allow read: if isAuthenticated() && (
+        isCreator(resource.data) || 
+        (resource.data.isPrivate != true && isAdmin()) ||
+        (resource.data.isPrivate != true && exists(/databases/$(database)/documents/projects/$(resource.data.projectId)) && 
+          (
+            request.auth.uid == get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.createdBy ||
+            (get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.memberIds != null && 
+             request.auth.uid in get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.memberIds)
+          )
+        )
+      );
+
+      // 2. CREATE POLICY:
+      allow create: if isAuthenticated() && 
+        request.resource.data.createdBy == request.auth.uid;
+
+      // 3. UPDATE POLICY:
+      allow update: if isAuthenticated() && (
+        isCreator(resource.data) || 
+        (resource.data.isPrivate != true && (isAdmin() || isLead() || resource.data.assigneeId == request.auth.uid))
+      );
+
+      // 4. DELETE POLICY:
+      // Private tasks: Only creator can delete.
+      // Public tasks: Admin, Lead, or Creator can delete.
+      allow delete: if isAuthenticated() && (
+        isCreator(resource.data) || 
+        (resource.data.isPrivate != true && (isAdmin() || isLead()))
+      );
+    }
+  }
+}

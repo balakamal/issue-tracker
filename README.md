@@ -1,4 +1,4 @@
-# InnovateX Tracker 🛡️
+# Issue Tracker 🛡️
 
 > **Enterprise Enhancements & Loopholes Management Platform**  
 > Inspired by the minimal, ultra-modern aesthetics of [Corbel](https://demo.codeandchill.store/corbel).  
@@ -8,7 +8,7 @@
 
 ## 📸 Overview & Design Philosophy
 
-InnovateX Tracker delivers an editorial-grade, obsidian dark and crisp light user interface crafted with:
+Issue Tracker delivers an editorial-grade, obsidian dark and crisp light user interface crafted with:
 - **Typography**: Google Fonts **Urbanist** (`400..800`) paired with **JetBrains Mono** for tabular numbers and codes.
 - **Ambient Canvas**: Full-viewport dynamic ambient glow (`.mesh`) providing luxury studio depth without GPU layer seams.
 - **Corbel Pill Navigation & Floating Dock**: Left-mounted vertical pill dock (`.dock`) with instant ⌘K search, theme toggle, and settings.

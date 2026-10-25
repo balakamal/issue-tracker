@@ -94,6 +94,12 @@ export function TaskDetailDrawer() {
   const assignee = users.find(u => u.id === currentTask.assigneeId);
   const creator = users.find(u => u.id === currentTask.createdBy);
 
+  const isAdmin = currentUser?.role === 'Admin';
+  const isLead = currentUser?.role === 'Lead';
+  const isCreator = Boolean(currentUser && currentTask && currentTask.createdBy === currentUser.id);
+  const canEditTask = isAdmin || isLead || isCreator;
+  const canDeleteTask = currentTask.isPrivate ? isCreator : (isAdmin || isLead || isCreator);
+
   const checklist = currentTask.checklist || [];
   const completedCount = checklist.filter(c => c.completed).length;
   const totalCount = checklist.length;
@@ -289,13 +295,15 @@ export function TaskDetailDrawer() {
                         {currentTask.title}
                       </h2>
                     </div>
-                    <button 
-                      className="btn-secondary" 
-                      style={{ padding: '6px 12px', fontSize: 12 }}
-                      onClick={() => setIsEditingSpecs(true)}
-                    >
-                      Edit Details
-                    </button>
+                    {canEditTask && (
+                      <button 
+                        className="btn-secondary" 
+                        style={{ padding: '6px 12px', fontSize: 12 }}
+                        onClick={() => setIsEditingSpecs(true)}
+                      >
+                        Edit Details
+                      </button>
+                    )}
                   </div>
 
                   {/* Problem Statement Box */}
@@ -433,9 +441,6 @@ export function TaskDetailDrawer() {
                       <div className="comment-content-area">
                         <div className="comment-meta">
                           <span className="comment-author-name">{commentAuthor?.name || 'Team Member'}</span>
-                          <span style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 600 }}>
-                            {commentAuthor?.role}
-                          </span>
                           <span className="comment-time">
                             • {new Date(comm.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
@@ -478,7 +483,7 @@ export function TaskDetailDrawer() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                   <Avatar user={currentUser} size={22} showTooltip={false} />
                   <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>
-                    Commenting as {currentUser.name} ({currentUser.role})
+                    Commenting as {currentUser.name}
                   </span>
                 </div>
                 <textarea
@@ -527,7 +532,7 @@ export function TaskDetailDrawer() {
                   <option value="">Unassigned</option>
                   {users.map(u => (
                     <option key={u.id} value={u.id}>
-                      {u.name} — {u.role}
+                      {u.name}
                     </option>
                   ))}
                 </select>
@@ -569,30 +574,52 @@ export function TaskDetailDrawer() {
                   </div>
                 </div>
 
-                <button 
-                  className={`filter-pill-button ${currentTask.isPrivate ? 'active' : ''}`}
-                  onClick={handleTogglePrivacy}
-                >
-                  {currentTask.isPrivate ? <Lock size={13} /> : <Globe size={13} />}
-                  <span>{currentTask.isPrivate ? 'Make Public' : 'Make Private'}</span>
-                </button>
+                {canEditTask && (
+                  <button 
+                    className={`filter-pill-button ${currentTask.isPrivate ? 'active' : ''}`}
+                    onClick={handleTogglePrivacy}
+                  >
+                    {currentTask.isPrivate ? <Lock size={13} /> : <Globe size={13} />}
+                    <span>{currentTask.isPrivate ? 'Make Public' : 'Make Private'}</span>
+                  </button>
+                )}
               </div>
 
-              {/* Delete Task */}
-              <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid var(--border-subtle)' }}>
-                <button
-                  className="btn-danger"
-                  style={{ width: '100%', justifyContent: 'center' }}
-                  onClick={() => {
-                    if (window.confirm(`Are you sure you want to delete ${currentTask.id} (${currentTask.title})?`)) {
-                      deleteTask(currentTask.id);
-                      handleClose();
-                    }
-                  }}
-                >
-                  <Trash2 size={15} /> Delete Task Permanently
-                </button>
-              </div>
+              {/* Delete Task - Role Based Permissions */}
+              {canDeleteTask ? (
+                <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid var(--border-subtle)' }}>
+                  <button
+                    className="btn-danger"
+                    style={{ width: '100%', justifyContent: 'center' }}
+                    onClick={() => {
+                      if (window.confirm(`Are you sure you want to delete ${currentTask.id} (${currentTask.title})?`)) {
+                        deleteTask(currentTask.id);
+                        handleClose();
+                      }
+                    }}
+                  >
+                    <Trash2 size={15} /> Delete Task Permanently
+                  </button>
+                </div>
+              ) : (
+                <div style={{ 
+                  marginTop: 24, 
+                  paddingTop: 14, 
+                  borderTop: '1px solid var(--border-subtle)',
+                  fontSize: 12,
+                  color: 'var(--muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}>
+                  <Lock size={13} />
+                  <span>
+                    {currentTask.isPrivate 
+                      ? "Private task: only the task author can delete this item." 
+                      : "Public task: only the task author, Lead, or Admin can delete this item."}
+                  </span>
+                </div>
+              )}
             </div>
           )}
           </div>

@@ -1,169 +1,129 @@
 import React, { useState } from 'react';
-import { 
-  ShieldCheck, 
-  Lock, 
-  Mail, 
-  User, 
-  Briefcase, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  CheckCircle2, 
-  Sparkles,
-  Zap,
-  RefreshCw,
-  Flame,
-  AlertCircle
-} from 'lucide-react';
+import { ArrowRight, RefreshCw, AlertCircle, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useTasks } from '../../context/TaskContext';
+import { AppLogo } from '../common/AppLogo';
 
 export function AuthPage() {
-  const { login, register } = useAuth();
-  const { theme } = useTasks();
-
-  const [mode, setMode] = useState('login'); // 'login' | 'register'
+  const { loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
+  
+  const [activeTab, setActiveTab] = useState('signin'); // 'signin' | 'signup'
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [role, setRole] = useState('Senior Software Engineer');
-  const [rememberMe, setRememberMe] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-
-    if (mode === 'register') {
-      if (!name.trim()) {
-        setErrorMessage('Please provide your full name.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setErrorMessage('Passwords do not match. Please verify and try again.');
-        return;
-      }
-      if (password.length < 6) {
-        setErrorMessage('Password should be at least 6 characters long.');
-        return;
-      }
-    }
-
+  const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      if (mode === 'login') {
-        await login(email, password, rememberMe);
-      } else {
-        await register({
-          name: name.trim(),
-          email: email.trim(),
-          password,
-          role: role.trim()
-        });
-      }
+      setErrorMessage('');
+      await loginWithGoogle();
     } catch (err) {
-      setErrorMessage(err.message || 'Authentication failed. Please check credentials.');
+      console.error('Google Sign-In failed:', err);
+      if (err.code === 'auth/popup-closed-by-user') {
+        setErrorMessage('Sign-in cancelled. Please complete the Google authentication popup.');
+      } else if (err.code === 'auth/cancelled-popup-request') {
+        setErrorMessage('Another sign-in request is already in progress.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setErrorMessage('This domain is not authorized in Firebase Console > Authentication > Settings > Authorized domains.');
+      } else if (err.code === 'auth/configuration-not-found' || (err.message && err.message.includes('CONFIGURATION_NOT_FOUND'))) {
+        setErrorMessage('Google Sign-In is not enabled yet in your Firebase Console. Please open Firebase Console > Authentication > Sign-in method and enable Google.');
+      } else {
+        setErrorMessage(err.message || 'Authentication failed. Please check network connection and try again.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDemoSignIn = async (demoEmail, demoPass) => {
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    if (!email.trim() || !password) {
+      setErrorMessage('Please enter both email and password.');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setErrorMessage('');
-      await login(demoEmail, demoPass, true);
+
+      if (activeTab === 'signin') {
+        await loginWithEmail(email, password);
+      } else {
+        if (!name.trim()) {
+          setErrorMessage('Please enter your full name.');
+          setIsLoading(false);
+          return;
+        }
+        await registerWithEmail({ name, email, password });
+      }
     } catch (err) {
-      setErrorMessage(err.message || 'Demo sign-in failed.');
+      console.error('Email authentication failed:', err);
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setErrorMessage('Invalid email or password. Please verify your credentials.');
+      } else if (err.code === 'auth/email-already-in-use') {
+        setErrorMessage('An account with this email already exists. Please sign in instead.');
+      } else if (err.code === 'auth/weak-password') {
+        setErrorMessage('Password must be at least 6 characters.');
+      } else {
+        setErrorMessage(err.message || 'Authentication failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-page-container">
-      {/* Left Panel: 3D Casual & Business Visual Showcase */}
-      <div className="auth-hero-panel">
-        <div className="auth-hero-header">
-          <div className="brand-badge">
-            <div className="brand-icon-wrapper">
-              <ShieldCheck size={22} />
-            </div>
-            <div>
-              <div className="brand-title">
-                PalTech
-              </div>
-              <div className="brand-sub">Enterprise Tracker</div>
-            </div>
-          </div>
-
-          <span className="badge" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: '1px solid var(--primary)' }}>
-            Enterprise Edition
-          </span>
+    <div className="auth-split-container">
+      {/* Left Panel: Visual Artwork & Brand */}
+      <div className="auth-visual-panel">
+        <div className="auth-visual-brand">
+          <AppLogo size={32} />
+          <span className="brand-title">Issue Tracker</span>
         </div>
 
-        <div className="auth-hero-content">
-          <div className="auth-illustration-wrapper">
+        <div className="auth-visual-body">
+          <div className="auth-illustration-box">
             <img 
               src="./assets/auth_illustration.jpg" 
-              alt="PalTech Team Collaboration" 
+              alt="Issue Tracker Team Collaboration" 
               className="auth-illustration-img"
             />
           </div>
 
-          <h2 className="auth-hero-title">
-            Collaborate on Enhancements &amp; Eliminate Loopholes
+          <h2 className="auth-visual-headline">
+            Track, debate &amp; resolve issues
           </h2>
-          <p className="auth-hero-subtitle">
-            Bridge product ideation and engineering execution with live discussions, subtask checklists, and continuous token session security.
+          <p className="auth-visual-subtext">
+            Streamlined engineering workflow from discovery to completion.
           </p>
-
-          <div className="auth-features-chips">
-            <div className="auth-feature-chip">
-              <RefreshCw size={13} color="var(--primary)" />
-              <span>Token Rotation Active</span>
-            </div>
-            <div className="auth-feature-chip">
-              <ShieldCheck size={13} color="var(--status-green)" />
-              <span>Zero Re-Login Needed</span>
-            </div>
-            <div className="auth-feature-chip">
-              <Flame size={13} color="var(--primary)" />
-              <span>Firebase Cloud Sync</span>
-            </div>
-          </div>
         </div>
 
-        <div className="auth-hero-footer">
-          <span>&copy; {new Date().getFullYear()} PalTech • Digital Engineering &amp; AI Solutions</span>
-          <span>SSL 256-Bit Encrypted</span>
-        </div>
+        <div style={{ height: 20 }} />
       </div>
 
-      {/* Right Panel: Login / Account Creation Form */}
-      <div className="auth-form-panel">
-        <div className="auth-card">
-          <div className="auth-header-block">
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-              {mode === 'login' ? 'Welcome back' : 'Create your account'}
-            </h1>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              {mode === 'login' 
-                ? 'Sign in with your enterprise credentials to access your workspaces.' 
-                : 'Join PalTech to track, ideate, and resolve project loopholes.'}
+      {/* Right Panel: Centered Issue Tracker Dual Sign-In Gate */}
+      <div className="auth-action-panel">
+        <div className="auth-action-card">
+          <div className="auth-action-header">
+            <div className="auth-action-mark">
+              <AppLogo size={46} />
+            </div>
+            <h1 className="auth-action-title">Issue Tracker</h1>
+            <p className="auth-action-subtitle">
+              {activeTab === 'signin' 
+                ? 'Sign in to access your projects and tasks' 
+                : 'Create an account to join the workspace'}
             </p>
           </div>
 
-          {/* Tab Switcher */}
-          <div className="auth-tab-switcher">
+          {/* Mode Tabs: Sign In vs Sign Up */}
+          <div className="auth-mode-tabs">
             <button
               type="button"
-              className={`auth-tab-btn ${mode === 'login' ? 'active' : ''}`}
+              className={`auth-mode-tab ${activeTab === 'signin' ? 'active' : ''}`}
               onClick={() => {
-                setMode('login');
+                setActiveTab('signin');
                 setErrorMessage('');
               }}
             >
@@ -171,159 +131,66 @@ export function AuthPage() {
             </button>
             <button
               type="button"
-              className={`auth-tab-btn ${mode === 'register' ? 'active' : ''}`}
+              className={`auth-mode-tab ${activeTab === 'signup' ? 'active' : ''}`}
               onClick={() => {
-                setMode('register');
+                setActiveTab('signup');
                 setErrorMessage('');
               }}
             >
-              Create Account
+              Sign Up
             </button>
           </div>
 
-          {/* Quick Demo Sign In Bar */}
-          <div className="auth-fast-demo-bar">
-            <div>
-              <span style={{ fontWeight: 700 }}>Quick Demo Access:</span>
-              <div style={{ fontSize: 11, opacity: 0.8 }}>Click to sign in with pre-configured session:</div>
-            </div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button
-                type="button"
-                className="filter-pill-button"
-                style={{ fontSize: 11, padding: '3px 8px', backgroundColor: '#FFFFFF', color: '#0A2540', fontWeight: 700 }}
-                onClick={() => handleDemoSignIn('kamal.t@pal.tech', 'paltech2026')}
-              >
-                Kamal (Lead)
-              </button>
-              <button
-                type="button"
-                className="filter-pill-button"
-                style={{ fontSize: 11, padding: '3px 8px', backgroundColor: '#FFFFFF', color: '#0A2540', fontWeight: 700 }}
-                onClick={() => handleDemoSignIn('alex.chen@pal.tech', 'paltech2026')}
-              >
-                Alex (Arch)
-              </button>
-            </div>
-          </div>
-
-          {/* Error Message Banner */}
           {errorMessage && (
             <div className="auth-error-banner">
-              <AlertCircle size={15} />
+              <AlertCircle size={15} style={{ flexShrink: 0 }} />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          {/* Interactive Form */}
-          <form onSubmit={handleSubmit} className="auth-form">
-            {mode === 'register' && (
-              <div className="animate-tab-fade" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="form-group">
-                  <label className="form-label">Full Name *</label>
-                  <div className="password-input-wrap">
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g., Jordan Miller"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Role / Department</label>
-                  <select
-                    className="form-select"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                  >
-                    <option value="Senior Software Engineer">Senior Software Engineer</option>
-                    <option value="Staff Systems Architect">Staff Systems Architect</option>
-                    <option value="Product Manager">Product Manager</option>
-                    <option value="Security Engineer">Security Engineer</option>
-                    <option value="QA & Reliability Lead">QA &amp; Reliability Lead</option>
-                  </select>
-                </div>
+          {/* Email / Password Form */}
+          <form onSubmit={handleEmailSubmit} className="auth-form-body">
+            {activeTab === 'signup' && (
+              <div className="auth-input-group">
+                <User size={15} className="auth-input-icon" />
+                <input
+                  type="text"
+                  className="auth-text-input"
+                  placeholder="Full Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={isLoading}
+                  required
+                />
               </div>
             )}
 
-            <div className="form-group">
-              <label className="form-label">Corporate Email Address *</label>
+            <div className="auth-input-group">
+              <Mail size={15} className="auth-input-icon" />
               <input
                 type="email"
-                className="form-input"
-                placeholder="name@paltech.com"
-                required
+                className="auth-text-input"
+                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                required
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Password *</label>
-              <div className="password-input-wrap">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className="form-input"
-                  placeholder="Enter password..."
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  title={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
+            <div className="auth-input-group">
+              <Lock size={15} className="auth-input-icon" />
+              <input
+                type="password"
+                className="auth-text-input"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required
+              />
             </div>
 
-            {mode === 'register' && (
-              <div className="form-group animate-tab-fade">
-                <label className="form-label">Confirm Password *</label>
-                <div className="password-input-wrap">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    className="form-input"
-                    placeholder="Repeat password..."
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Remember Me / Token Rotation Checkbox */}
-            <div className="auth-remember-row">
-              <label className="auth-checkbox-label">
-                <input
-                  type="checkbox"
-                  className="auth-checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
-                <span>Keep me signed in (Token Rotation)</span>
-              </label>
-
-              {mode === 'login' && (
-                <button
-                  type="button"
-                  style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600 }}
-                  onClick={() => alert('Password reset link can be sent via Firebase Auth or email administrator.')}
-                >
-                  Forgot password?
-                </button>
-              )}
-            </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               className="auth-submit-btn"
@@ -331,52 +198,40 @@ export function AuthPage() {
             >
               {isLoading ? (
                 <>
-                  <RefreshCw size={16} className="animate-spin" />
-                  <span>{mode === 'login' ? 'Authenticating & Rotating Tokens...' : 'Creating Account...'}</span>
+                  <RefreshCw size={15} className="animate-spin" />
+                  <span>Processing...</span>
                 </>
               ) : (
-                <>
-                  <span>{mode === 'login' ? 'Sign In to Workspace' : 'Create PalTech Account'}</span>
-                  <ArrowRight size={16} />
-                </>
+                <span>{activeTab === 'signin' ? 'Sign In' : 'Create Account'}</span>
               )}
             </button>
           </form>
 
-          {/* Footer toggle */}
-          <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-secondary)' }}>
-            {mode === 'login' ? (
-              <>
-                Don't have an account yet?{' '}
-                <button
-                  type="button"
-                  style={{ color: 'var(--primary)', fontWeight: 700 }}
-                  onClick={() => {
-                    setMode('register');
-                    setErrorMessage('');
-                  }}
-                >
-                  Create one now
-                </button>
-              </>
-            ) : (
-              <>
-                Already have an account?{' '}
-                <button
-                  type="button"
-                  style={{ color: 'var(--primary)', fontWeight: 700 }}
-                  onClick={() => {
-                    setMode('login');
-                    setErrorMessage('');
-                  }}
-                >
-                  Sign in here
-                </button>
-              </>
-            )}
+          {/* Divider */}
+          <div className="auth-divider">
+            <span>or continue with</span>
           </div>
+
+          {/* Google Sign-In Action */}
+          <button
+            type="button"
+            className="auth-google-btn"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Google</span>
+            <ArrowRight size={14} className="auth-arrow-icon" />
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
+export default AuthPage;
