@@ -149,7 +149,7 @@ export function TaskProvider({ children }) {
   };
 
   // Views & Mode
-  const [activeView, setActiveView] = useState('tickets'); // 'tickets' | 'ideation' | 'analytics' | 'users'
+  const [activeView, setActiveView] = useState('tickets'); // 'tickets' | 'analytics' | 'users'
   const [ticketsViewMode, setTicketsViewModeState] = useState(() => {
     try {
       return localStorage.getItem('vantage_loop_tickets_view_mode_v1') || 'table';
@@ -237,8 +237,8 @@ export function TaskProvider({ children }) {
 
   // Auto-close mobile drawer when switching views or projects
   const handleSelectView = (viewId) => {
-    // Normalize legacy kanban or list view IDs to tickets
-    const normalized = (viewId === 'kanban' || viewId === 'list') ? 'tickets' : viewId;
+    // Normalize legacy kanban, list, or ideation view IDs to tickets
+    const normalized = (viewId === 'kanban' || viewId === 'list' || viewId === 'ideation') ? 'tickets' : viewId;
     setActiveView(normalized);
     setIsMobileSidebarOpen(false);
   };

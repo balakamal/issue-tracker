@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Topbar } from './components/layout/Topbar';
 import { TicketsView } from './components/tickets/TicketsView';
-import { IdeationHub } from './components/ideation/IdeationHub';
 import { AnalyticsDashboard } from './components/analytics/AnalyticsDashboard';
 import { UserManagementView } from './components/users/UserManagementView';
 import { TaskDetailDrawer } from './components/task-detail/TaskDetailDrawer';
@@ -81,7 +80,6 @@ export function App() {
         <main className="main-content-scrollable">
           <div key={activeView} className="view-transition-wrapper">
             {(activeView === 'tickets' || activeView === 'kanban' || activeView === 'list' || activeView === 'table') && <TicketsView />}
-            {activeView === 'ideation' && <IdeationHub />}
             {activeView === 'analytics' && <AnalyticsDashboard />}
             {activeView === 'users' && <UserManagementView />}
           </div>

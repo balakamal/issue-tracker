@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   LayoutGrid, 
-  Lightbulb, 
   BarChart3, 
   ShieldCheck, 
   Settings, 
@@ -70,7 +69,6 @@ export function Sidebar({ onOpenFinder }) {
   }, []);
 
   const selectedProj = projects.find(p => p.id === selectedProjectId);
-  const ideationCount = visibleTasks.filter(t => t.status === 'ideation').length;
   const isAdmin = currentUser?.role === 'Admin';
 
   const handleNavClick = (viewId) => {
@@ -204,21 +202,6 @@ export function Sidebar({ onOpenFinder }) {
             )}
           </button>
 
-          {/* Ideation */}
-          <button
-            type="button"
-            className={`nav-item ${activeView === 'ideation' ? 'active' : ''}`}
-            onClick={() => handleNavClick('ideation')}
-            title="Ideation & Discovery Hub"
-          >
-            <Lightbulb size={18} className="nav-icon" />
-            {!isSidebarCollapsed && (
-              <>
-                <span className="nav-label">Ideation</span>
-                {ideationCount > 0 && <span className="nav-count">{ideationCount}</span>}
-              </>
-            )}
-          </button>
 
           {/* Metrics */}
           <button

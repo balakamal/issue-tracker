@@ -3,7 +3,6 @@ import {
   Search, 
   X, 
   LayoutGrid, 
-  Lightbulb, 
   Table, 
   BarChart3, 
   FolderKanban, 
@@ -55,7 +54,6 @@ export function FinderModal({ isOpen, onClose }) {
 
   const viewOptions = [
     { type: 'view', id: 'tickets', title: 'Tickets (Board & Table)', icon: LayoutGrid, desc: 'Manage sprint workflow and backlog' },
-    { type: 'view', id: 'ideation', title: 'Ideation Hub', icon: Lightbulb, desc: 'Brainstorm & capture loopholes' },
     { type: 'view', id: 'analytics', title: 'Metrics & Health', icon: BarChart3, desc: 'Resolution metrics & velocity' },
     ...(currentUser?.role === 'Admin' ? [
       { type: 'view', id: 'users', title: 'User Management', icon: ShieldCheck, desc: 'Manage workspace members & roles' }
