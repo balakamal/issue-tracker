@@ -9,9 +9,11 @@ import {
   FolderKanban, 
   ShieldAlert, 
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  ShieldCheck
 } from 'lucide-react';
 import { useTasks } from '../../context/TaskContext';
+import { useAuth } from '../../context/AuthContext';
 
 export function FinderModal({ isOpen, onClose }) {
   const { 
@@ -21,6 +23,7 @@ export function FinderModal({ isOpen, onClose }) {
     setSelectedProjectId, 
     setSelectedTaskId 
   } = useTasks();
+  const { currentUser } = useAuth();
   
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -51,10 +54,12 @@ export function FinderModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const viewOptions = [
-    { type: 'view', id: 'kanban', title: 'Kanban Board', icon: LayoutGrid, desc: 'Manage workflow progression' },
+    { type: 'view', id: 'tickets', title: 'Tickets (Board & Table)', icon: LayoutGrid, desc: 'Manage sprint workflow and backlog' },
     { type: 'view', id: 'ideation', title: 'Ideation Hub', icon: Lightbulb, desc: 'Brainstorm & capture loopholes' },
-    { type: 'view', id: 'table', title: 'Data Table', icon: Table, desc: 'Tabular backlog and sorting' },
     { type: 'view', id: 'analytics', title: 'Metrics & Health', icon: BarChart3, desc: 'Resolution metrics & velocity' },
+    ...(currentUser?.role === 'Admin' ? [
+      { type: 'view', id: 'users', title: 'User Management', icon: ShieldCheck, desc: 'Manage workspace members & roles' }
+    ] : [])
   ];
 
   const filteredViews = viewOptions.filter(v => 

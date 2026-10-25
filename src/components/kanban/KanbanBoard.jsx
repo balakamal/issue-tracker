@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Plus, 
-  Search, 
-  ShieldAlert, 
-  Sparkles, 
-  SlidersHorizontal,
-  LayoutGrid,
-  List as ListIcon
-} from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useTasks, STAGES } from '../../context/TaskContext';
 import { KanbanCard } from './KanbanCard';
 
@@ -18,14 +10,7 @@ export function KanbanBoard() {
     setIsCreateModalOpen, 
     setCreateInitialStage,
     activeMobileStage,
-    setActiveMobileStage,
-    filterType,
-    setFilterType,
-    filterPriority,
-    setFilterPriority,
-    searchQuery,
-    setSearchQuery,
-    setActiveView
+    setActiveMobileStage
   } = useTasks();
 
   const [dragOverCol, setDragOverCol] = useState(null);
@@ -65,86 +50,6 @@ export function KanbanBoard() {
 
   return (
     <div className="kanban-view-container">
-      {/* Contextual Corbel-style View Toolbar */}
-      <div className="view-toolbar">
-        <div className="view-toolbar-left">
-          {/* Corbel Segmented Control */}
-          <div className="segmented-control">
-            <button
-              className={`segmented-btn ${filterType === 'all' ? 'active' : ''}`}
-              onClick={() => setFilterType('all')}
-            >
-              All Items
-            </button>
-            <button
-              className={`segmented-btn ${filterType === 'loophole' ? 'active' : ''}`}
-              onClick={() => setFilterType('loophole')}
-            >
-              <ShieldAlert size={13} color="var(--type-loophole)" />
-              <span>Loopholes</span>
-            </button>
-            <button
-              className={`segmented-btn ${filterType === 'enhancement' ? 'active' : ''}`}
-              onClick={() => setFilterType('enhancement')}
-            >
-              <Sparkles size={13} color="var(--type-enhancement)" />
-              <span>Enhancements</span>
-            </button>
-          </div>
-
-          {/* Priority Filter */}
-          <div className="filter-select-wrapper">
-            <SlidersHorizontal size={13} className="filter-select-icon" />
-            <select
-              className="filter-select"
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              title="Filter by priority"
-            >
-              <option value="all">All Priorities</option>
-              <option value="critical">Critical</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="view-toolbar-right">
-          {/* View Mode Switcher (Board vs List) */}
-          <div className="view-mode-toggle">
-            <button 
-              className="view-mode-btn active" 
-              title="Kanban Board Active"
-            >
-              <LayoutGrid size={15} />
-              <span className="view-mode-label">Board</span>
-            </button>
-            <button 
-              className="view-mode-btn" 
-              onClick={() => setActiveView('list')}
-              title="Switch to List View"
-            >
-              <ListIcon size={15} />
-              <span className="view-mode-label">List</span>
-            </button>
-          </div>
-
-          <div className="search-box-container">
-            <Search size={14} className="search-box-icon" />
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search items, specs, IDs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="toolbar-item-count">
-            {visibleTasks.length} {visibleTasks.length === 1 ? 'item' : 'items'}
-          </div>
-        </div>
-      </div>
 
       {/* Mobile Stage Selector Tabs (Swipable Pill Bar) */}
       <div className="kanban-mobile-tabs mobile-only">

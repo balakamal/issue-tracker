@@ -3,26 +3,13 @@ import { useTasks, STAGES } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
 import { TypeBadge, PriorityBadge, PrivacyBadge, ProjectChip } from '../common/Badge';
 import { Avatar } from '../common/Avatar';
-import { 
-  ArrowUpDown, 
-  CheckSquare, 
-  Search, 
-  ShieldAlert, 
-  Sparkles, 
-  SlidersHorizontal 
-} from 'lucide-react';
+import { ArrowUpDown, CheckSquare } from 'lucide-react';
 
 export function TableView() {
   const { 
     visibleTasks, 
     projects, 
-    setSelectedTaskId,
-    filterType,
-    setFilterType,
-    filterPriority,
-    setFilterPriority,
-    searchQuery,
-    setSearchQuery
+    setSelectedTaskId
   } = useTasks();
   const { users } = useAuth();
 
@@ -58,68 +45,6 @@ export function TableView() {
 
   return (
     <div className="table-view-container">
-      {/* Contextual Corbel-style View Toolbar */}
-      <div className="view-toolbar">
-        <div className="view-toolbar-left">
-          {/* Corbel Segmented Control */}
-          <div className="segmented-control">
-            <button
-              className={`segmented-btn ${filterType === 'all' ? 'active' : ''}`}
-              onClick={() => setFilterType('all')}
-            >
-              All Items
-            </button>
-            <button
-              className={`segmented-btn ${filterType === 'loophole' ? 'active' : ''}`}
-              onClick={() => setFilterType('loophole')}
-            >
-              <ShieldAlert size={13} color="var(--type-loophole)" />
-              <span>Loopholes</span>
-            </button>
-            <button
-              className={`segmented-btn ${filterType === 'enhancement' ? 'active' : ''}`}
-              onClick={() => setFilterType('enhancement')}
-            >
-              <Sparkles size={13} color="var(--type-enhancement)" />
-              <span>Enhancements</span>
-            </button>
-          </div>
-
-          {/* Priority Filter */}
-          <div className="filter-select-wrapper">
-            <SlidersHorizontal size={13} className="filter-select-icon" />
-            <select
-              className="filter-select"
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              title="Filter by priority"
-            >
-              <option value="all">All Priorities</option>
-              <option value="critical">Critical</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="view-toolbar-right">
-          <div className="search-box-container">
-            <Search size={14} className="search-box-icon" />
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search items, specs, IDs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="toolbar-item-count">
-            {visibleTasks.length} {visibleTasks.length === 1 ? 'item' : 'items'}
-          </div>
-        </div>
-      </div>
-
       <div style={{ overflowX: 'auto' }}>
         <table className="dense-table">
           <thead>

@@ -201,32 +201,7 @@ export function UserManagementModal() {
                         value={userRole}
                         disabled={isPending}
                         onChange={(e) => handleRoleChange(u, e.target.value)}
-                        style={{
-                          height: 30,
-                          padding: '0 26px 0 10px',
-                          borderRadius: 8,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          backgroundColor: userRole === 'Admin' 
-                            ? 'rgba(121, 182, 227, 0.15)' 
-                            : userRole === 'Lead' 
-                              ? 'rgba(167, 139, 250, 0.15)' 
-                              : 'var(--bg-input)',
-                          color: userRole === 'Admin' 
-                            ? 'var(--sky)' 
-                            : userRole === 'Lead' 
-                              ? '#a78bfa' 
-                              : 'var(--text-secondary)',
-                          border: `1px solid ${
-                            userRole === 'Admin' 
-                              ? 'rgba(121, 182, 227, 0.35)' 
-                              : userRole === 'Lead'
-                                ? 'rgba(167, 139, 250, 0.35)'
-                                : 'var(--border-subtle)'
-                          }`,
-                          cursor: isPending ? 'wait' : 'pointer',
-                          outline: 'none'
-                        }}
+                        className={`role-select role-select--${userRole.toLowerCase()}`}
                       >
                         <option value="Admin">Admin</option>
                         <option value="Lead">Lead</option>

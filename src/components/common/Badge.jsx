@@ -1,5 +1,29 @@
 import React from 'react';
-import { ShieldAlert, Sparkles, Lock, Globe, AlertCircle, AlertTriangle, Info, Clock } from 'lucide-react';
+import { 
+  ShieldAlert, 
+  Sparkles, 
+  Lock, 
+  Globe, 
+  ChevronsUp, 
+  ChevronUp, 
+  Equal, 
+  ChevronDown 
+} from 'lucide-react';
+
+export function PriorityIcon({ priority, size = 13 }) {
+  switch (priority) {
+    case 'critical':
+      return <ChevronsUp size={size} color="var(--priority-critical)" title="Critical Priority" />;
+    case 'high':
+      return <ChevronUp size={size} color="var(--priority-high)" title="High Priority" />;
+    case 'medium':
+      return <Equal size={size} color="var(--priority-medium)" title="Medium Priority" />;
+    case 'low':
+      return <ChevronDown size={size} color="var(--priority-low)" title="Low Priority" />;
+    default:
+      return <Equal size={size} color="var(--muted)" />;
+  }
+}
 
 export function TypeBadge({ type }) {
   const isLoophole = type === 'loophole';
@@ -12,13 +36,6 @@ export function TypeBadge({ type }) {
 }
 
 export function PriorityBadge({ priority }) {
-  const icons = {
-    critical: <AlertCircle size={11} />,
-    high: <AlertTriangle size={11} />,
-    medium: <Info size={11} />,
-    low: <Clock size={11} />
-  };
-
   const labels = {
     critical: 'Critical',
     high: 'High',
@@ -28,7 +45,7 @@ export function PriorityBadge({ priority }) {
 
   return (
     <span className={`badge badge-priority-${priority}`}>
-      {icons[priority]}
+      <PriorityIcon priority={priority} size={12} />
       {labels[priority] || priority}
     </span>
   );

@@ -148,12 +148,76 @@ export function TaskProvider({ children }) {
     }
   };
 
-  // Views & Filters
-  const [activeView, setActiveView] = useState('kanban'); // 'kanban' | 'ideation' | 'table' | 'analytics'
+  // Views & Mode
+  const [activeView, setActiveView] = useState('tickets'); // 'tickets' | 'ideation' | 'analytics' | 'users'
+  const [ticketsViewMode, setTicketsViewModeState] = useState(() => {
+    try {
+      return localStorage.getItem('vantage_loop_tickets_view_mode_v1') || 'table';
+    } catch {
+      return 'table';
+    }
+  });
+
+  const setTicketsViewMode = (mode) => {
+    setTicketsViewModeState(mode);
+    try {
+      localStorage.setItem('vantage_loop_tickets_view_mode_v1', mode);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  // Global & Jira / Azure DevOps style filters
   const [selectedProjectId, setSelectedProjectId] = useState('all');
   const [filterType, setFilterType] = useState('all'); // 'all' | 'loophole' | 'enhancement'
   const [filterPriority, setFilterPriority] = useState('all'); // 'all' | 'critical' | 'high' | 'medium' | 'low'
+  const [filterAssignee, setFilterAssignee] = useState('all'); // 'all' | 'me' | 'unassigned' | userId
+  const [filterStage, setFilterStage] = useState('all'); // 'all' | stageId
   const [searchQuery, setSearchQuery] = useState('');
+  const [quickFilters, setQuickFilters] = useState({
+    assignedToMe: false,
+    createdByMe: false,
+    onlyLoopholes: false,
+    onlyEnhancements: false,
+    criticalOnly: false
+  });
+
+  const toggleQuickFilter = (key) => {
+    setQuickFilters(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const resetFilters = () => {
+    setFilterType('all');
+    setFilterPriority('all');
+    setFilterAssignee('all');
+    setFilterStage('all');
+    setSearchQuery('');
+    setQuickFilters({
+      assignedToMe: false,
+      createdByMe: false,
+      onlyLoopholes: false,
+      onlyEnhancements: false,
+      criticalOnly: false
+    });
+  };
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filterType !== 'all') count++;
+    if (filterPriority !== 'all') count++;
+    if (filterAssignee !== 'all') count++;
+    if (filterStage !== 'all') count++;
+    if (searchQuery.trim()) count++;
+    if (quickFilters.assignedToMe) count++;
+    if (quickFilters.createdByMe) count++;
+    if (quickFilters.onlyLoopholes) count++;
+    if (quickFilters.onlyEnhancements) count++;
+    if (quickFilters.criticalOnly) count++;
+    return count;
+  }, [filterType, filterPriority, filterAssignee, filterStage, searchQuery, quickFilters]);
 
   // Sidebar Collapse (Desktop) & Mobile Off-canvas Drawer
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => storageService.getSidebarCollapsed());
@@ -173,7 +237,9 @@ export function TaskProvider({ children }) {
 
   // Auto-close mobile drawer when switching views or projects
   const handleSelectView = (viewId) => {
-    setActiveView(viewId);
+    // Normalize legacy kanban or list view IDs to tickets
+    const normalized = (viewId === 'kanban' || viewId === 'list') ? 'tickets' : viewId;
+    setActiveView(normalized);
     setIsMobileSidebarOpen(false);
   };
 
@@ -201,7 +267,7 @@ export function TaskProvider({ children }) {
     });
   }, [projects, currentUser]);
 
-  // Privacy & Access Rule Engine:
+  // Privacy & Access Rule Engine + Jira / Azure DevOps Filters:
   // 1. Private tasks are strictly visible ONLY to the author
   // 2. Public tasks:
   //    - Admin can view all
@@ -238,7 +304,40 @@ export function TaskProvider({ children }) {
         return false;
       }
 
-      // 6. Search query filter
+      // 6. Assignee filter (Jira / ADO)
+      if (filterAssignee !== 'all') {
+        if (filterAssignee === 'me') {
+          if (task.assigneeId !== currentUser?.id) return false;
+        } else if (filterAssignee === 'unassigned') {
+          if (task.assigneeId) return false;
+        } else if (task.assigneeId !== filterAssignee) {
+          return false;
+        }
+      }
+
+      // 7. Stage / State filter (Jira / ADO)
+      if (filterStage !== 'all' && task.status !== filterStage) {
+        return false;
+      }
+
+      // 8. Quick filter pills
+      if (quickFilters.assignedToMe && task.assigneeId !== currentUser?.id) {
+        return false;
+      }
+      if (quickFilters.createdByMe && task.createdBy !== currentUser?.id) {
+        return false;
+      }
+      if (quickFilters.onlyLoopholes && task.type !== 'loophole') {
+        return false;
+      }
+      if (quickFilters.onlyEnhancements && task.type !== 'enhancement') {
+        return false;
+      }
+      if (quickFilters.criticalOnly && task.priority !== 'critical') {
+        return false;
+      }
+
+      // 9. Search query filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesTitle = task.title.toLowerCase().includes(q);
@@ -250,7 +349,18 @@ export function TaskProvider({ children }) {
 
       return true;
     });
-  }, [tasks, accessibleProjects, currentUser, selectedProjectId, filterType, filterPriority, searchQuery]);
+  }, [
+    tasks, 
+    accessibleProjects, 
+    currentUser, 
+    selectedProjectId, 
+    filterType, 
+    filterPriority, 
+    filterAssignee, 
+    filterStage, 
+    quickFilters, 
+    searchQuery
+  ]);
 
   // Task Operations
   const addTask = async (taskData) => {
@@ -613,10 +723,21 @@ export function TaskProvider({ children }) {
       setFilterType,
       filterPriority,
       setFilterPriority,
+      filterAssignee,
+      setFilterAssignee,
+      filterStage,
+      setFilterStage,
+      quickFilters,
+      setQuickFilters,
+      toggleQuickFilter,
+      resetFilters,
+      activeFiltersCount,
       searchQuery,
       setSearchQuery,
       activeView,
       setActiveView: handleSelectView,
+      ticketsViewMode,
+      setTicketsViewMode,
       selectedProjectId,
       setSelectedProjectId: handleSelectProject,
       isSidebarCollapsed,

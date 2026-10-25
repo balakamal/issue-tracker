@@ -243,3 +243,23 @@
   box-shadow: 0 0 0 2px var(--surface);
   user-select: none;
 }
+
+/* Jira Style Issue Key */
+.jira-issue-key {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sky);
+  background: rgba(121, 182, 227, 0.12);
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(121, 182, 227, 0.28);
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+}
+
+.jira-issue-key:hover {
+  background: rgba(121, 182, 227, 0.22);
+  border-color: var(--sky);
+}
+

@@ -48,7 +48,7 @@ export function KanbanCard({ task }) {
           <PriorityBadge priority={task.priority} />
           <PrivacyBadge isPrivate={task.isPrivate} />
         </div>
-        <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--text-muted)', fontWeight: 600 }}>
+        <span className="jira-issue-key" title={`Issue Key: ${task.id}`}>
           {task.id}
         </span>
       </div>

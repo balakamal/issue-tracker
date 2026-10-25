@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Topbar } from './components/layout/Topbar';
-import { KanbanBoard } from './components/kanban/KanbanBoard';
-import { ListView } from './components/list/ListView';
+import { TicketsView } from './components/tickets/TicketsView';
 import { IdeationHub } from './components/ideation/IdeationHub';
-import { TableView } from './components/table/TableView';
 import { AnalyticsDashboard } from './components/analytics/AnalyticsDashboard';
+import { UserManagementView } from './components/users/UserManagementView';
 import { TaskDetailDrawer } from './components/task-detail/TaskDetailDrawer';
 import { CreateTaskModal } from './components/modals/CreateTaskModal';
 import { ProjectManagerModal } from './components/modals/ProjectManagerModal';
@@ -81,11 +80,10 @@ export function App() {
         {/* Scrollable View Container */}
         <main className="main-content-scrollable">
           <div key={activeView} className="view-transition-wrapper">
-            {activeView === 'kanban' && <KanbanBoard />}
-            {activeView === 'list' && <ListView />}
+            {(activeView === 'tickets' || activeView === 'kanban' || activeView === 'list' || activeView === 'table') && <TicketsView />}
             {activeView === 'ideation' && <IdeationHub />}
-            {activeView === 'table' && <TableView />}
             {activeView === 'analytics' && <AnalyticsDashboard />}
+            {activeView === 'users' && <UserManagementView />}
           </div>
         </main>
       </div>
