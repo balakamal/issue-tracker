@@ -16,7 +16,9 @@ import {
   ChevronDown,
   Clock,
   ArrowRight,
-  Share2
+  Share2,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTasks, STAGES } from '../../context/TaskContext';
@@ -51,6 +53,32 @@ export function TaskDetailDrawer() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const closeTimerRef = useRef(null);
 
+  // Expanded dialog state (persisted in localStorage)
+  const [isExpanded, setIsExpanded] = useState(() => {
+    try {
+      return localStorage.getItem('vantage_task_dialog_expanded') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
+  const toggleExpanded = () => {
+    setIsExpanded(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('vantage_task_dialog_expanded', String(next));
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  const handleHeaderDoubleClick = (e) => {
+    if (e.target.closest('button, select, input, textarea, a, .filter-select, .modal-close-btn')) {
+      return;
+    }
+    toggleExpanded();
+  };
+
   const [activeTab, setActiveTab] = useState('ideation'); // 'ideation' | 'checklist' | 'discussion' | 'metadata'
   const [newSubtaskText, setNewSubtaskText] = useState('');
   const [newCommentText, setNewCommentText] = useState('');
@@ -82,8 +110,12 @@ export function TaskDetailDrawer() {
     };
     updateTabPill();
     window.addEventListener('resize', updateTabPill);
-    return () => window.removeEventListener('resize', updateTabPill);
-  }, [activeTab, displayedTask]);
+    const timer = setTimeout(updateTabPill, 310);
+    return () => {
+      window.removeEventListener('resize', updateTabPill);
+      clearTimeout(timer);
+    };
+  }, [activeTab, displayedTask, isExpanded]);
 
   useEffect(() => {
     if (selectedTask) {
@@ -115,6 +147,13 @@ export function TaskDetailDrawer() {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && displayedTask && !isClosing) {
         handleClose();
+        return;
+      }
+      // Toggle fullscreen with Shift+F (or 'f' when not focused on an input/textarea)
+      const isEditing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+      if (!isEditing && displayedTask && !isClosing && (e.key === 'f' || e.key === 'F')) {
+        e.preventDefault();
+        toggleExpanded();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -181,11 +220,15 @@ export function TaskDetailDrawer() {
       aria-modal="true"
     >
       <div 
-        className={`drawer-container ${isClosing ? 'drawer-container-closing' : ''}`} 
+        className={`drawer-container ${isExpanded ? 'is-expanded' : ''} ${isClosing ? 'drawer-container-closing' : ''}`} 
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drawer Header */}
-        <div className="drawer-header">
+        {/* Dialog Header */}
+        <div 
+          className="drawer-header"
+          onDoubleClick={handleHeaderDoubleClick}
+          title="Double-click header to toggle fullscreen"
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 13, fontFamily: 'monospace', fontWeight: 800, color: 'var(--text-muted)' }}>
               {currentTask.id}
@@ -232,7 +275,20 @@ export function TaskDetailDrawer() {
               <span>{currentTask.isPrivate ? 'Private' : 'Project-Shared'}</span>
             </button>
 
-            <button className="modal-close-btn" onClick={handleClose} title="Close drawer" aria-label="Close drawer">
+            {/* Expand / Restore dialog button */}
+            <button
+              type="button"
+              className={`filter-pill-button ${isExpanded ? 'active' : ''}`}
+              style={{ height: 28, fontSize: 11.5, gap: 5 }}
+              onClick={toggleExpanded}
+              title={isExpanded ? "Restore dialog size (Shift+F / Double-click header)" : "Expand to fullscreen (Shift+F / Double-click header)"}
+              aria-label={isExpanded ? "Restore dialog size" : "Expand dialog to fullscreen"}
+            >
+              {isExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+              <span>{isExpanded ? 'Restore' : 'Expand'}</span>
+            </button>
+
+            <button className="modal-close-btn" onClick={handleClose} title="Close dialog (Esc)" aria-label="Close dialog">
               <X size={18} />
             </button>
           </div>
@@ -304,31 +360,33 @@ export function TaskDetailDrawer() {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">
-                      {currentTask.type === 'loophole' ? 'Loophole / Problem Statement' : 'Opportunity & Motivation'}
-                    </label>
-                    <textarea 
-                      className="form-textarea" 
-                      rows={4}
-                      value={editProblem}
-                      onChange={(e) => setEditProblem(e.target.value)}
-                      placeholder="Detail the technical vulnerability, race condition, or UX loophole..."
-                    />
+                  <div className={isExpanded ? 'form-row' : ''}>
+                    <div className="form-group">
+                      <label className="form-label">
+                        {currentTask.type === 'loophole' ? 'Loophole / Problem Statement' : 'Opportunity & Motivation'}
+                      </label>
+                      <textarea 
+                        className="form-textarea" 
+                        rows={isExpanded ? 7 : 4}
+                        value={editProblem}
+                        onChange={(e) => setEditProblem(e.target.value)}
+                        placeholder="Detail the technical vulnerability, race condition, or UX loophole..."
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Proposed Solution Concept</label>
+                      <textarea 
+                        className="form-textarea" 
+                        rows={isExpanded ? 7 : 4}
+                        value={editSolution}
+                        onChange={(e) => setEditSolution(e.target.value)}
+                        placeholder="Describe the proposed technical architecture, fix, or workflow..."
+                      />
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Proposed Solution Concept</label>
-                    <textarea 
-                      className="form-textarea" 
-                      rows={4}
-                      value={editSolution}
-                      onChange={(e) => setEditSolution(e.target.value)}
-                      placeholder="Describe the proposed technical architecture, fix, or workflow..."
-                    />
-                  </div>
-
-                  <div className="form-group">
+                  <div className="form-group" style={{ maxWidth: isExpanded ? 320 : '100%' }}>
                     <label className="form-label">Target Completion Date</label>
                     <input 
                       type="date" 
@@ -348,59 +406,62 @@ export function TaskDetailDrawer() {
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-                    <div>
-                      <ProjectChip project={project} />
-                      <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', marginTop: 8 }}>
-                        {currentTask.title}
-                      </h2>
+                <div className={isExpanded ? 'task-expanded-grid' : ''} style={!isExpanded ? { display: 'flex', flexDirection: 'column', gap: 18 } : {}}>
+                  <div className={isExpanded ? 'task-expanded-main' : ''} style={!isExpanded ? { display: 'flex', flexDirection: 'column', gap: 18 } : {}}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                      <div>
+                        <ProjectChip project={project} />
+                        <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginTop: 8 }}>
+                          {currentTask.title}
+                        </h2>
+                      </div>
+                      {canEditTask && (
+                        <button 
+                          className="btn-secondary" 
+                          style={{ padding: '6px 12px', fontSize: 12 }}
+                          onClick={() => setIsEditingSpecs(true)}
+                        >
+                          Edit Details
+                        </button>
+                      )}
                     </div>
-                    {canEditTask && (
-                      <button 
-                        className="btn-secondary" 
-                        style={{ padding: '6px 12px', fontSize: 12 }}
-                        onClick={() => setIsEditingSpecs(true)}
-                      >
-                        Edit Details
-                      </button>
-                    )}
+
+                    {/* Problem Statement Box */}
+                    <div className="ideation-spec-box">
+                      <div className="spec-heading" style={{ color: currentTask.type === 'loophole' ? 'var(--type-loophole)' : 'var(--primary)' }}>
+                        {currentTask.type === 'loophole' ? 'Loophole / Gap Specification:' : 'Enhancement Scope & Motivation:'}
+                      </div>
+                      <div className="spec-content">
+                        {currentTask.problemStatement || 'No problem statement recorded yet. Click Edit Details to add technical context.'}
+                      </div>
+                    </div>
+
+                    {/* Proposed Solution Box */}
+                    <div className="ideation-spec-box">
+                      <div className="spec-heading" style={{ color: 'var(--primary)' }}>
+                        Proposed Solution &amp; Architecture:
+                      </div>
+                      <div className="spec-content">
+                        {currentTask.proposedSolution || 'No solution concept specified yet. Brainstorm with your team in the Discussion tab.'}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Problem Statement Box */}
-                  <div className="ideation-spec-box">
-                    <div className="spec-heading" style={{ color: currentTask.type === 'loophole' ? 'var(--type-loophole)' : 'var(--primary)' }}>
-                      {currentTask.type === 'loophole' ? 'Loophole / Gap Specification:' : 'Enhancement Scope & Motivation:'}
-                    </div>
-                    <div className="spec-content">
-                      {currentTask.problemStatement || 'No problem statement recorded yet. Click Edit Details to add technical context.'}
-                    </div>
-                  </div>
-
-                  {/* Proposed Solution Box */}
-                  <div className="ideation-spec-box">
-                    <div className="spec-heading" style={{ color: 'var(--primary)' }}>
-                      Proposed Solution &amp; Architecture:
-                    </div>
-                    <div className="spec-content">
-                      {currentTask.proposedSolution || 'No solution concept specified yet. Brainstorm with your team in the Discussion tab.'}
-                    </div>
-                  </div>
-
-                  {/* Assignment, Creator, and Target Date info */}
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between', 
-                    padding: '12px 16px', 
-                    borderRadius: 10, 
-                    backgroundColor: 'var(--bg-card)',
-                    border: '1px solid var(--border-subtle)',
-                    flexWrap: 'wrap',
-                    gap: 12
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {/* Sidebar in Expanded mode or bottom info bar in normal mode */}
+                  <div className={isExpanded ? 'task-expanded-sidebar' : ''}>
+                    <div style={{ 
+                      display: 'flex', 
+                      flexDirection: isExpanded ? 'column' : 'row',
+                      alignItems: isExpanded ? 'stretch' : 'center', 
+                      justifyContent: 'space-between', 
+                      padding: '16px', 
+                      borderRadius: 14, 
+                      backgroundColor: 'var(--bg-card)',
+                      border: '1px solid var(--border-subtle)',
+                      flexWrap: 'wrap',
+                      gap: 14
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)' }}>
                           Assignee
                         </span>
@@ -410,11 +471,9 @@ export function TaskDetailDrawer() {
                           onAssign={(newUserId) => updateTask(currentTask.id, { assigneeId: newUserId })}
                         />
                       </div>
-                    </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Avatar user={creator} size={26} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Avatar user={creator} size={28} />
                         <div>
                           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Ideated by</div>
                           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -427,6 +486,23 @@ export function TaskDetailDrawer() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
                           <Calendar size={14} />
                           <span>Target: {new Date(currentTask.targetDate).toLocaleDateString()}</span>
+                        </div>
+                      )}
+
+                      {isExpanded && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 12, borderTop: '1px solid var(--border-subtle)', marginTop: 4 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Priority</span>
+                            <PriorityBadge priority={currentTask.priority} />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Classification</span>
+                            <TypeBadge type={currentTask.type} />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Privacy</span>
+                            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{currentTask.isPrivate ? 'Private' : 'Project-Shared'}</span>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -589,34 +665,35 @@ export function TaskDetailDrawer() {
           {/* TAB 4: METADATA & CLASSIFICATION */}
           {activeTab === 'metadata' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              {/* Project Classification */}
-              <div className="form-group">
-                <label className="form-label">Project Classification</label>
-                <select
-                  className="form-select"
-                  value={currentTask.projectId}
-                  onChange={(e) => updateTask(currentTask.id, { projectId: e.target.value })}
-                >
-                  {projects.map(p => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.key})
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* Project & Assignee row */}
+              <div className={isExpanded ? 'form-row' : ''} style={{ display: isExpanded ? 'grid' : 'flex', flexDirection: 'column', gap: 16 }}>
+                <div className="form-group">
+                  <label className="form-label">Project Classification</label>
+                  <select
+                    className="form-select"
+                    value={currentTask.projectId}
+                    onChange={(e) => updateTask(currentTask.id, { projectId: e.target.value })}
+                  >
+                    {projects.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({p.key})
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Assignee */}
-              <div className="form-group">
-                <label className="form-label">Assignee</label>
-                <AssigneePicker
-                  currentAssigneeId={currentTask.assigneeId}
-                  projectId={currentTask.projectId}
-                  onAssign={(newUserId) => updateTask(currentTask.id, { assigneeId: newUserId })}
-                />
+                <div className="form-group">
+                  <label className="form-label">Assignee</label>
+                  <AssigneePicker
+                    currentAssigneeId={currentTask.assigneeId}
+                    projectId={currentTask.projectId}
+                    onAssign={(newUserId) => updateTask(currentTask.id, { assigneeId: newUserId })}
+                  />
+                </div>
               </div>
 
               {/* Priority */}
-              <div className="form-group">
+              <div className="form-group" style={{ maxWidth: isExpanded ? 440 : '100%' }}>
                 <label className="form-label">Priority Level</label>
                 <select
                   className="form-select"

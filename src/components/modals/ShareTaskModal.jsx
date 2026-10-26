@@ -79,8 +79,6 @@ export function ShareTaskModal({ task, isOpen, onClose }) {
     }
   };
 
-  const accentColor = task.type === 'loophole' ? 'var(--coral)' : 'var(--mint)';
-
   return (
     <div 
       className="modal-overlay" 
@@ -216,10 +214,6 @@ export function ShareTaskModal({ task, isOpen, onClose }) {
             {previewPlatform === 'slack' ? (
               /* Slack / Discord Style Rich Unfurl Card */
               <div className="social-card-slack">
-                <div 
-                  className="social-card-slack-bar" 
-                  style={{ backgroundColor: accentColor }} 
-                />
                 <div className="social-card-slack-content">
                   <div className="social-card-brand-row">
                     <AppLogo size={16} />

@@ -281,6 +281,19 @@
   flex-direction: column;
   gap: 14px;
   padding: 18px;
+  animation: tableFadeIn 0.26s var(--ease-spring) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes tableFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .desktop-table-container {
@@ -332,7 +345,20 @@
 .dense-table tbody tr {
   cursor: pointer;
   transition: background-color 0.15s ease;
+  animation: rowCascadeIn 0.35s var(--ease-spring) backwards;
 }
+
+.dense-table tbody tr:nth-child(1) { animation-delay: 20ms; }
+.dense-table tbody tr:nth-child(2) { animation-delay: 45ms; }
+.dense-table tbody tr:nth-child(3) { animation-delay: 70ms; }
+.dense-table tbody tr:nth-child(4) { animation-delay: 95ms; }
+.dense-table tbody tr:nth-child(5) { animation-delay: 120ms; }
+.dense-table tbody tr:nth-child(6) { animation-delay: 145ms; }
+.dense-table tbody tr:nth-child(7) { animation-delay: 170ms; }
+.dense-table tbody tr:nth-child(8) { animation-delay: 195ms; }
+.dense-table tbody tr:nth-child(9) { animation-delay: 220ms; }
+.dense-table tbody tr:nth-child(10) { animation-delay: 245ms; }
+.dense-table tbody tr:nth-child(n+11) { animation-delay: 265ms; }
 
 .dense-table tbody tr:hover td {
   background-color: var(--surface-2);
@@ -385,7 +411,15 @@
     cursor: pointer;
     box-shadow: var(--shadow);
     transition: all 0.16s ease;
+    animation: rowCascadeIn 0.35s var(--ease-spring) backwards;
   }
+
+  .mobile-tasks-container .mobile-task-card:nth-child(1) { animation-delay: 20ms; }
+  .mobile-tasks-container .mobile-task-card:nth-child(2) { animation-delay: 45ms; }
+  .mobile-tasks-container .mobile-task-card:nth-child(3) { animation-delay: 70ms; }
+  .mobile-tasks-container .mobile-task-card:nth-child(4) { animation-delay: 95ms; }
+  .mobile-tasks-container .mobile-task-card:nth-child(5) { animation-delay: 120ms; }
+  .mobile-tasks-container .mobile-task-card:nth-child(n+6) { animation-delay: 145ms; }
 
   .mobile-task-card:active {
     transform: scale(0.99);
