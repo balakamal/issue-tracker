@@ -121,6 +121,16 @@
   --r-lg: 26px;
   --r-pill: 999px;
 
+  /* Fluid Animation & Easing Tokens (Corbel System) */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.3, 1.4, 0.5, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 160ms;
+  --duration-normal: 260ms;
+  --duration-drawer: 300ms;
+  --duration-theme: 620ms;
+
   /* Aliases for legacy component compatibility */
   --bg-app: var(--bg);
   --bg-sidebar: var(--surface);
@@ -299,7 +309,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Corbel Ambient Glowing Mesh Background
+   Corbel Ambient Glowing Mesh Background with Floating Orbs
    ========================================================================== */
 .mesh {
   z-index: -1;
@@ -307,10 +317,51 @@ html, body {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: 
-    radial-gradient(circle 800px at 15% 10%, var(--mesh-a) 0%, transparent 70%),
-    radial-gradient(circle 900px at 85% 90%, var(--mesh-b) 0%, transparent 70%),
-    radial-gradient(circle 650px at 75% 20%, var(--mesh-c) 0%, transparent 70%);
+}
+
+.mesh i {
+  filter: blur(65px);
+  opacity: 0.85;
+  will-change: transform;
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  animation: meshDrift 20s ease-in-out infinite alternate;
+}
+
+.mesh__a {
+  background: radial-gradient(closest-side, var(--mesh-a), transparent);
+  width: 62vmax;
+  height: 62vmax;
+  top: -22vmax;
+  left: -18vmax;
+  animation-duration: 18s;
+}
+
+.mesh__b {
+  background: radial-gradient(closest-side, var(--mesh-b), transparent);
+  width: 70vmax;
+  height: 70vmax;
+  bottom: -28vmax;
+  right: -22vmax;
+  animation-duration: 24s;
+  animation-delay: -5s;
+}
+
+.mesh__c {
+  background: radial-gradient(closest-side, var(--mesh-c), transparent);
+  width: 48vmax;
+  height: 48vmax;
+  top: -14vmax;
+  right: 6vmax;
+  animation-duration: 22s;
+  animation-delay: -9s;
+}
+
+@keyframes meshDrift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(45px, 30px, 0) scale(1.06); }
+  100% { transform: translate3d(-30px, -40px, 0) scale(0.96); }
 }
 
 /* Typography Headings */
@@ -476,6 +527,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding: 0 12px;
 }
 
+.btn:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.08s;
+}
+
 /* Icon Buttons */
 .ibtn {
   width: 38px;
@@ -500,6 +556,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: var(--glass-3);
   color: var(--text);
   transform: scale(1.05);
+}
+
+.ibtn:active {
+  transform: scale(0.94);
+  transition-duration: 0.08s;
 }
 
 /* Cards */
@@ -665,4 +726,33 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-family: var(--display);
   letter-spacing: -0.025em;
   font-weight: 700;
+}
+
+/* ==========================================================================
+   View Transitions API Native Rules
+   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ==========================================================================
+   Accessibility: Reduced Motion Support
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .live__dot:after {
+    animation: none !important;
+  }
 }

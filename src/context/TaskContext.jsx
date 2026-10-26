@@ -24,8 +24,64 @@ export function TaskProvider({ children }) {
     storageService.setTheme(theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));
+  const toggleTheme = (eventOrElement) => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+    // Fallback if View Transitions API is not supported or user prefers reduced motion
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (typeof document === 'undefined' || !document.startViewTransition || prefersReducedMotion) {
+      setThemeState(nextTheme);
+      return;
+    }
+
+    // Determine circular ripple origin point (x, y)
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
+
+    if (eventOrElement) {
+      const el = eventOrElement.currentTarget || eventOrElement.target || eventOrElement;
+      if (el && typeof el.getBoundingClientRect === 'function') {
+        const rect = el.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      } else if (typeof eventOrElement.clientX === 'number') {
+        x = eventOrElement.clientX;
+        y = eventOrElement.clientY;
+      }
+    } else {
+      const themeBtn = document.querySelector('#theme-btn');
+      if (themeBtn) {
+        const rect = themeBtn.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      }
+    }
+
+    // Calculate maximum distance to the furthest screen corner
+    const maxRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    const transition = document.startViewTransition(() => {
+      setThemeState(nextTheme);
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${maxRadius}px at ${x}px ${y}px)`
+          ]
+        },
+        {
+          duration: 620,
+          easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+          pseudoElement: '::view-transition-new(root)'
+        }
+      );
+    });
   };
 
   // Persistent data state

@@ -55,6 +55,29 @@ export function TaskDetailDrawer() {
   const [editSolution, setEditSolution] = useState('');
   const [editTargetDate, setEditTargetDate] = useState('');
 
+  // Sliding pill indicator for drawer navigation tabs
+  const navTabsRef = useRef(null);
+  const tabRefs = useRef({});
+  const [tabPillStyle, setTabPillStyle] = useState({ left: 20, width: 0, opacity: 0 });
+
+  useEffect(() => {
+    const updateTabPill = () => {
+      const activeEl = tabRefs.current[activeTab];
+      if (activeEl && navTabsRef.current) {
+        const navRect = navTabsRef.current.getBoundingClientRect();
+        const elRect = activeEl.getBoundingClientRect();
+        setTabPillStyle({
+          left: elRect.left - navRect.left + navTabsRef.current.scrollLeft,
+          width: elRect.width,
+          opacity: 1
+        });
+      }
+    };
+    updateTabPill();
+    window.addEventListener('resize', updateTabPill);
+    return () => window.removeEventListener('resize', updateTabPill);
+  }, [activeTab, displayedTask]);
+
   useEffect(() => {
     if (selectedTask) {
       setDisplayedTask(selectedTask);
@@ -191,9 +214,19 @@ export function TaskDetailDrawer() {
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="drawer-tabs-nav">
+        {/* Tab Navigation with Corbel Sliding Pill */}
+        <div className="drawer-tabs-nav" ref={navTabsRef}>
+          <div 
+            className="drawer-tabs-pill" 
+            style={{ 
+              left: `${tabPillStyle.left}px`, 
+              width: `${tabPillStyle.width}px`, 
+              opacity: tabPillStyle.opacity 
+            }} 
+            aria-hidden="true" 
+          />
           <button 
+            ref={(el) => (tabRefs.current['ideation'] = el)}
             className={`drawer-tab-btn ${activeTab === 'ideation' ? 'active' : ''}`}
             onClick={() => setActiveTab('ideation')}
           >
@@ -202,6 +235,7 @@ export function TaskDetailDrawer() {
           </button>
 
           <button 
+            ref={(el) => (tabRefs.current['checklist'] = el)}
             className={`drawer-tab-btn ${activeTab === 'checklist' ? 'active' : ''}`}
             onClick={() => setActiveTab('checklist')}
           >
@@ -210,6 +244,7 @@ export function TaskDetailDrawer() {
           </button>
 
           <button 
+            ref={(el) => (tabRefs.current['discussion'] = el)}
             className={`drawer-tab-btn ${activeTab === 'discussion' ? 'active' : ''}`}
             onClick={() => setActiveTab('discussion')}
           >
@@ -218,6 +253,7 @@ export function TaskDetailDrawer() {
           </button>
 
           <button 
+            ref={(el) => (tabRefs.current['metadata'] = el)}
             className={`drawer-tab-btn ${activeTab === 'metadata' ? 'active' : ''}`}
             onClick={() => setActiveTab('metadata')}
           >

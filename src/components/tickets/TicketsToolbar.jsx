@@ -68,6 +68,30 @@ export function TicketsToolbar() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const toolbarRef = useRef(null);
 
+  // Sliding pill indicator for view mode toggle
+  const toggleContainerRef = useRef(null);
+  const tableBtnRef = useRef(null);
+  const boardBtnRef = useRef(null);
+  const [pillStyle, setPillStyle] = useState({ left: 3, width: 0, opacity: 0 });
+
+  useEffect(() => {
+    const updatePill = () => {
+      const activeEl = ticketsViewMode === 'table' ? tableBtnRef.current : boardBtnRef.current;
+      if (activeEl && toggleContainerRef.current) {
+        const containerRect = toggleContainerRef.current.getBoundingClientRect();
+        const elRect = activeEl.getBoundingClientRect();
+        setPillStyle({
+          left: elRect.left - containerRect.left,
+          width: elRect.width,
+          opacity: 1
+        });
+      }
+    };
+    updatePill();
+    window.addEventListener('resize', updatePill);
+    return () => window.removeEventListener('resize', updatePill);
+  }, [ticketsViewMode]);
+
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (toolbarRef.current && !toolbarRef.current.contains(e.target)) {
@@ -174,9 +198,19 @@ export function TicketsToolbar() {
 
       {/* Middle & Right: View Switcher, Search, Jira/ADO Multi-Select Filters, Quick Presets & CTA */}
       <div className="tickets-toolbar-right">
-        {/* View Mode Toggle: Table vs Board */}
-        <div className="view-mode-toggle" role="group" aria-label="View Mode">
+        {/* View Mode Toggle: Table vs Board with Corbel Sliding Pill */}
+        <div className="view-mode-toggle" ref={toggleContainerRef} role="group" aria-label="View Mode">
+          <div 
+            className="view-mode-pill" 
+            style={{ 
+              left: `${pillStyle.left}px`, 
+              width: `${pillStyle.width}px`,
+              opacity: pillStyle.opacity
+            }} 
+            aria-hidden="true" 
+          />
           <button 
+            ref={tableBtnRef}
             type="button"
             className={`view-mode-btn ${ticketsViewMode === 'table' ? 'active' : ''}`}
             onClick={() => setTicketsViewMode('table')}
@@ -186,6 +220,7 @@ export function TicketsToolbar() {
             <span className="view-mode-label">Table</span>
           </button>
           <button 
+            ref={boardBtnRef}
             type="button"
             className={`view-mode-btn ${ticketsViewMode === 'board' ? 'active' : ''}`}
             onClick={() => setTicketsViewMode('board')}

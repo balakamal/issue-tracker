@@ -9,7 +9,7 @@ import {
   ShieldAlert, 
   Sparkles,
   ArrowRight,
-  ShieldCheck
+  Users
 } from 'lucide-react';
 import { useTasks } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
@@ -26,37 +26,53 @@ export function FinderModal({ isOpen, onClose }) {
   
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isRendered, setIsRendered] = useState(isOpen);
+  const [isClosing, setIsClosing] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
+      setIsRendered(true);
+      setIsClosing(false);
       setQuery('');
       setSelectedIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
+    } else if (isRendered) {
+      setIsClosing(true);
+      const timer = setTimeout(() => {
+        setIsRendered(false);
+        setIsClosing(false);
+      }, 160);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, isRendered]);
+
+  const handleClose = () => {
+    if (isClosing) return;
+    onClose();
+  };
 
   // Global shortcut: ⌘K or Ctrl+K to toggle, ESC to close
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleGlobalKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        if (isOpen) onClose();
-      } else if (e.key === 'Escape' && isOpen) {
-        onClose();
+        if (isOpen && !isClosing) handleClose();
+      } else if (e.key === 'Escape' && isRendered && !isClosing) {
+        handleClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isOpen, isRendered, isClosing]);
 
-  if (!isOpen) return null;
+  if (!isRendered) return null;
 
   const viewOptions = [
     { type: 'view', id: 'tickets', title: 'Tickets (Board & Table)', icon: LayoutGrid, desc: 'Manage sprint workflow and backlog' },
     { type: 'view', id: 'analytics', title: 'Metrics & Health', icon: BarChart3, desc: 'Resolution metrics & velocity' },
     ...(currentUser?.role === 'Admin' ? [
-      { type: 'view', id: 'users', title: 'User Management', icon: ShieldCheck, desc: 'Manage workspace members & roles' }
+      { type: 'view', id: 'users', title: 'User Management', icon: Users, desc: 'Manage workspace members & roles' }
     ] : [])
   ];
 
@@ -99,8 +115,17 @@ export function FinderModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="finder-backdrop" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="finder-box" onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
+    <div 
+      className={`finder-backdrop ${isClosing ? 'finder-backdrop-closing' : ''}`} 
+      onClick={handleClose} 
+      role="dialog" 
+      aria-modal="true"
+    >
+      <div 
+        className={`finder-box ${isClosing ? 'finder-box-closing' : ''}`} 
+        onClick={(e) => e.stopPropagation()} 
+        onKeyDown={handleKeyDown}
+      >
         <div className="finder-field">
           <Search size={18} className="finder-search-icon" />
           <input 

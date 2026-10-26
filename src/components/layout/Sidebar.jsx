@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
-  ShieldCheck, 
+  Users, 
   Search, 
   Settings, 
   RotateCcw, 
@@ -107,7 +107,7 @@ export function Sidebar({ onOpenFinder }) {
           onClick={() => setActiveView('users')}
           aria-label="User Management"
         >
-          <ShieldCheck size={18} color="var(--sky)" />
+          <Users size={18} color="var(--sky)" />
           <span className="dock__tip">User Management <kbd>Admin</kbd></span>
         </button>
       )}
@@ -154,15 +154,6 @@ export function Sidebar({ onOpenFinder }) {
             >
               <FolderKanban size={14} />
               <span>Manage Projects</span>
-            </button>
-
-            <button
-              type="button"
-              className="dock-popover-item text-danger"
-              onClick={handleResetConfirm}
-            >
-              <RotateCcw size={14} />
-              <span>Reset Sample Data</span>
             </button>
 
             <div className="dock-popover-sep" />
@@ -231,7 +222,7 @@ export function Sidebar({ onOpenFinder }) {
                 <button
                   type="button"
                   className={`profile-theme-btn ${theme === 'light' ? 'active' : ''}`}
-                  onClick={() => { if (theme !== 'light') toggleTheme(); }}
+                  onClick={(e) => { if (theme !== 'light') toggleTheme(e); }}
                 >
                   <Sun size={12} />
                   <span>Light</span>
@@ -239,7 +230,7 @@ export function Sidebar({ onOpenFinder }) {
                 <button
                   type="button"
                   className={`profile-theme-btn ${theme === 'dark' ? 'active' : ''}`}
-                  onClick={() => { if (theme !== 'dark') toggleTheme(); }}
+                  onClick={(e) => { if (theme !== 'dark') toggleTheme(e); }}
                 >
                   <Moon size={12} />
                   <span>Dark</span>

@@ -66,8 +66,12 @@ export function App() {
   // Authenticated: render full workspace with Corbel styling
   return (
     <div className="app-container" data-theme={theme}>
-      {/* Corbel Ambient Glowing Mesh Background */}
-      <div className="mesh" aria-hidden="true" />
+      {/* Corbel Ambient Glowing Mesh Background with Floating Orbs */}
+      <div className="mesh" aria-hidden="true">
+        <i className="mesh__a" />
+        <i className="mesh__b" />
+        <i className="mesh__c" />
+      </div>
 
       {/* Full-Width Topbar Header: Branding Truly at Top-Left, Profile at Top-Right */}
       <Topbar onOpenFinder={() => setIsFinderOpen(true)} />

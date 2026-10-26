@@ -107,6 +107,18 @@
   transform: scale(1.06);
 }
 
+.dock__btn:active {
+  transform: scale(0.95);
+}
+
+.theme-btn-icon {
+  transition: transform 0.4s var(--ease-spring);
+}
+
+.dock__btn:hover .theme-btn-icon {
+  transform: rotate(25deg) scale(1.12);
+}
+
 .dock__sep {
   background: var(--line-2);
   height: 1px;
@@ -911,12 +923,17 @@
 
 .view-transition-wrapper {
   width: 100%;
-  animation: viewFadeIn 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: viewFadeIn 0.22s var(--ease-spring) forwards;
+  will-change: opacity;
 }
 
 @keyframes viewFadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* ==========================================================================
@@ -1367,12 +1384,12 @@
   display: flex;
   justify-content: center;
   padding-top: 12vh;
-  animation: overlayFadeIn 0.15s ease-out;
+  animation: overlayEnter var(--duration-fast) var(--ease-spring) forwards;
+  will-change: opacity, backdrop-filter;
 }
 
-@keyframes overlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.finder-backdrop.finder-backdrop-closing {
+  animation: overlayExit var(--duration-fast) var(--ease-exit) forwards;
 }
 
 .finder-box {
@@ -1385,12 +1402,12 @@
   display: flex;
   flex-direction: column;
   max-height: 70vh;
-  animation: modalEnter 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: modalEnter var(--duration-normal) var(--ease-spring) forwards;
+  will-change: transform, opacity;
 }
 
-@keyframes modalEnter {
-  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+.finder-box.finder-box-closing {
+  animation: modalExit var(--duration-fast) var(--ease-exit) forwards;
 }
 
 .finder-field {
@@ -1582,7 +1599,12 @@
   z-index: 200;
   display: flex;
   justify-content: flex-start;
-  animation: overlayEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: overlayEnter var(--duration-fast) var(--ease-spring) forwards;
+  will-change: opacity, backdrop-filter;
+}
+
+.mobile-drawer-overlay.mobile-drawer-closing {
+  animation: overlayExit var(--duration-fast) var(--ease-exit) forwards;
 }
 
 .mobile-drawer-container {
@@ -1594,17 +1616,13 @@
   box-shadow: var(--shadow-pop);
   display: flex;
   flex-direction: column;
-  animation: drawerSlideInLeft 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: drawerSlideInLeft var(--duration-drawer) var(--ease-spring) forwards;
+  will-change: transform;
   overflow-y: auto;
 }
 
-@keyframes drawerSlideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.mobile-drawer-container.mobile-drawer-closing {
+  animation: drawerSlideOutLeft var(--duration-fast) var(--ease-exit) forwards;
 }
 
 .mobile-drawer-header {

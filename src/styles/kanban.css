@@ -188,6 +188,24 @@
   flex: 1 0 270px;
   transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
   border: 1px solid var(--line);
+  animation: columnCascadeIn 0.38s var(--ease-spring) backwards;
+}
+
+.kanban-columns-grid .kanban-column:nth-child(1) { animation-delay: 20ms; }
+.kanban-columns-grid .kanban-column:nth-child(2) { animation-delay: 60ms; }
+.kanban-columns-grid .kanban-column:nth-child(3) { animation-delay: 100ms; }
+.kanban-columns-grid .kanban-column:nth-child(4) { animation-delay: 140ms; }
+.kanban-columns-grid .kanban-column:nth-child(5) { animation-delay: 180ms; }
+
+@keyframes columnCascadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: 1540px) {
@@ -251,12 +269,17 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s var(--ease-spring);
 }
 
 .column-add-btn:hover {
   background-color: var(--well);
   color: var(--text);
+  transform: scale(1.12);
+}
+
+.column-add-btn:active {
+  transform: scale(0.92);
 }
 
 /* Column Cards Scroll Area */
@@ -640,11 +663,37 @@
   cursor: pointer;
   text-align: left;
   width: 100%;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, transform 0.12s var(--ease-spring);
+  animation: popoverItemCascade 0.22s var(--ease-spring) backwards;
+}
+
+.ado-filter-options-list .ado-filter-option:nth-child(1) { animation-delay: 20ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(2) { animation-delay: 40ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(3) { animation-delay: 60ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(4) { animation-delay: 80ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(5) { animation-delay: 100ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(6) { animation-delay: 120ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(7) { animation-delay: 140ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(8) { animation-delay: 160ms; }
+.ado-filter-options-list .ado-filter-option:nth-child(n+9) { animation-delay: 180ms; }
+
+@keyframes popoverItemCascade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .ado-filter-option:hover {
   background: var(--well);
+}
+
+.ado-filter-option:active {
+  transform: scale(0.98);
 }
 
 .ado-filter-option.checked {
@@ -661,7 +710,7 @@
   justify-content: center;
   color: var(--on-pill);
   background: transparent;
-  transition: all 0.15s ease;
+  transition: all 0.18s var(--ease-spring);
   flex-shrink: 0;
 }
 
@@ -669,6 +718,22 @@
   background: var(--pill);
   border-color: var(--pill);
   color: var(--on-pill);
+}
+
+.ado-checkbox.checked svg {
+  animation: checkPop 0.22s var(--ease-spring);
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0.7);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .ado-stage-dot, 

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   LayoutGrid, 
   BarChart3, 
-  ShieldCheck, 
+  Users, 
   FolderKanban, 
   Search, 
   Sun, 
@@ -29,24 +29,45 @@ export function MobileNavDrawer({ onOpenFinder }) {
   } = useTasks();
 
   const { currentUser, logout } = useAuth();
+  const [isRendered, setIsRendered] = useState(isMobileSidebarOpen);
+  const [isClosing, setIsClosing] = useState(false);
 
-  if (!isMobileSidebarOpen) return null;
+  useEffect(() => {
+    if (isMobileSidebarOpen) {
+      setIsRendered(true);
+      setIsClosing(false);
+    } else if (isRendered) {
+      setIsClosing(true);
+      const timer = setTimeout(() => {
+        setIsRendered(false);
+        setIsClosing(false);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobileSidebarOpen, isRendered]);
+
+  if (!isRendered) return null;
 
   const isAdmin = currentUser?.role === 'Admin';
 
+  const handleClose = () => {
+    if (isClosing) return;
+    closeMobileSidebar();
+  };
+
   const handleNav = (viewId) => {
     setActiveView(viewId);
-    closeMobileSidebar();
+    handleClose();
   };
 
   const handleOpenProjects = () => {
     setIsProjectManagerOpen(true);
-    closeMobileSidebar();
+    handleClose();
   };
 
   const handleSearch = () => {
     if (onOpenFinder) onOpenFinder();
-    closeMobileSidebar();
+    handleClose();
   };
 
   const handleResetConfirm = () => {
@@ -55,18 +76,26 @@ export function MobileNavDrawer({ onOpenFinder }) {
     );
     if (confirmed) {
       resetData();
-      closeMobileSidebar();
+      handleClose();
     }
   };
 
   const handleLogout = () => {
-    closeMobileSidebar();
+    handleClose();
     logout();
   };
 
   return (
-    <div className="mobile-drawer-overlay mobile-only" onClick={closeMobileSidebar} role="dialog" aria-modal="true">
-      <div className="mobile-drawer-container" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className={`mobile-drawer-overlay mobile-only ${isClosing ? 'mobile-drawer-closing' : ''}`} 
+      onClick={handleClose} 
+      role="dialog" 
+      aria-modal="true"
+    >
+      <div 
+        className={`mobile-drawer-container ${isClosing ? 'mobile-drawer-closing' : ''}`} 
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Drawer Header */}
         <div className="mobile-drawer-header">
           <div className="mobile-drawer-brand">
@@ -79,7 +108,7 @@ export function MobileNavDrawer({ onOpenFinder }) {
           <button 
             type="button" 
             className="mobile-drawer-close-btn" 
-            onClick={closeMobileSidebar}
+            onClick={handleClose}
             aria-label="Close navigation"
           >
             <X size={18} />
@@ -124,7 +153,7 @@ export function MobileNavDrawer({ onOpenFinder }) {
               className={`mobile-drawer-item ${activeView === 'users' ? 'active' : ''}`}
               onClick={() => handleNav('users')}
             >
-              <ShieldCheck size={17} />
+              <Users size={17} />
               <span>User Management</span>
             </button>
           )}
@@ -157,7 +186,7 @@ export function MobileNavDrawer({ onOpenFinder }) {
           <button 
             type="button" 
             className="mobile-theme-toggle"
-            onClick={toggleTheme}
+            onClick={(e) => toggleTheme(e)}
           >
             <span>Theme Mode</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--muted)' }}>
