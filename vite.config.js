@@ -125,7 +125,7 @@ function ogTagsPlugin() {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), ogTagsPlugin()],
-  base: '/',
+  base: process.env.BASE_URL || (process.env.NODE_ENV === 'production' ? '/issue-tracker/' : '/'),
   server: {
     port: 3000,
     open: false,
