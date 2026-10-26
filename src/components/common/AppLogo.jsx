@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 export function AppLogo({ size = 32, className = '' }) {
+  const uniqueId = useId();
+  const gradId = `issueTrackerGrad_${uniqueId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
+
   return (
     <svg 
       width={size} 
@@ -9,16 +12,17 @@ export function AppLogo({ size = 32, className = '' }) {
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      style={{ display: 'block', flexShrink: 0 }}
     >
       <defs>
-        <linearGradient id="issueTrackerGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#0284C7" />
           <stop offset="100%" stopColor="#2563EB" />
         </linearGradient>
       </defs>
       
       {/* Outer Squircle Container */}
-      <rect width="40" height="40" rx="12" fill="url(#issueTrackerGrad)" />
+      <rect width="40" height="40" rx="12" fill={`url(#${gradId})`} />
       <rect x="0.75" y="0.75" width="38.5" height="38.5" rx="11.25" stroke="rgba(255, 255, 255, 0.22)" strokeWidth="1.5" />
       
       {/* Circular Issue Progress Orbit */}

@@ -87,49 +87,37 @@ export function CreateTaskModal() {
       icon={type === 'loophole' ? ShieldAlert : Sparkles}
       maxWidth={680}
     >
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="modal-form">
         <div className="modal-body">
           {/* Classification Type Selector */}
           <div className="form-group">
             <label className="form-label">Classification Type</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="type-selector-grid">
               <button
                 type="button"
-                className={`filter-pill-button ${type === 'loophole' ? 'active' : ''}`}
-                style={{
-                  height: 44,
-                  justifyContent: 'center',
-                  gap: 8,
-                  borderColor: type === 'loophole' ? 'var(--type-loophole)' : undefined,
-                  backgroundColor: type === 'loophole' ? 'var(--type-loophole-bg)' : undefined,
-                  color: type === 'loophole' ? 'var(--type-loophole)' : undefined,
-                }}
+                className={`type-selector-card ${type === 'loophole' ? 'active loophole' : ''}`}
                 onClick={() => setType('loophole')}
               >
-                <ShieldAlert size={17} />
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontWeight: 800 }}>Project Loophole</div>
-                  <div style={{ fontSize: 10.5, opacity: 0.8 }}>Vulnerability, bug, or risk</div>
+                <div className="type-selector-icon">
+                  <ShieldAlert size={18} />
+                </div>
+                <div className="type-selector-content">
+                  <span className="type-selector-title">Project Loophole</span>
+                  <span className="type-selector-subtitle">Vulnerability, bug, or risk</span>
                 </div>
               </button>
 
               <button
                 type="button"
-                className={`filter-pill-button ${type === 'enhancement' ? 'active' : ''}`}
-                style={{
-                  height: 44,
-                  justifyContent: 'center',
-                  gap: 8,
-                  borderColor: type === 'enhancement' ? 'var(--type-enhancement)' : undefined,
-                  backgroundColor: type === 'enhancement' ? 'var(--type-enhancement-bg)' : undefined,
-                  color: type === 'enhancement' ? 'var(--type-enhancement)' : undefined,
-                }}
+                className={`type-selector-card ${type === 'enhancement' ? 'active enhancement' : ''}`}
                 onClick={() => setType('enhancement')}
               >
-                <Sparkles size={17} />
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontWeight: 800 }}>Enhancement</div>
-                  <div style={{ fontSize: 10.5, opacity: 0.8 }}>Feature, UX, or speed upgrade</div>
+                <div className="type-selector-icon">
+                  <Sparkles size={18} />
+                </div>
+                <div className="type-selector-content">
+                  <span className="type-selector-title">Enhancement</span>
+                  <span className="type-selector-subtitle">Feature, UX, or speed upgrade</span>
                 </div>
               </button>
             </div>
@@ -233,19 +221,19 @@ export function CreateTaskModal() {
 
           {/* Privacy Switch */}
           <div style={{
-            padding: '12px 14px',
-            borderRadius: 10,
-            backgroundColor: 'var(--bg-input)',
-            border: '1px solid var(--border-subtle)',
+            padding: '12px 16px',
+            borderRadius: 14,
+            backgroundColor: 'var(--well)',
+            border: '1px solid var(--line)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
                 {isPrivate ? 'Private (Classified)' : 'Project-Shared'}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)' }}>
                 {isPrivate ? 'Visible only to you' : 'Visible to all project collaborators'}
               </div>
             </div>

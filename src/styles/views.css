@@ -256,6 +256,19 @@
   padding: 18px;
 }
 
+.desktop-table-container {
+  display: block;
+  overflow-x: auto;
+  border-radius: 0 0 20px 20px;
+}
+
+.mobile-tasks-container {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
 .table-wrap {
   overflow-x: auto;
   border-radius: 0 0 20px 20px;
@@ -300,6 +313,117 @@
 
 .dense-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Mobile Responsive Card List for TableView */
+@media (max-width: 768px) {
+  .desktop-table-container {
+    display: none !important;
+  }
+
+  .mobile-tasks-container {
+    display: flex !important;
+  }
+
+  .table-view-container {
+    padding: 12px;
+    border-radius: 16px;
+    background: transparent;
+    border: none;
+  }
+
+  .mobile-task-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.16s ease;
+  }
+
+  .mobile-task-card:active {
+    transform: scale(0.99);
+    background: var(--well);
+  }
+
+  .mobile-task-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .mobile-task-id {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .mobile-task-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-task-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.35;
+    word-break: break-word;
+  }
+
+  .mobile-task-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+
+  .mobile-task-meta-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .mobile-task-stage {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--r-pill);
+    text-transform: capitalize;
+  }
+
+  .mobile-task-project {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-task-assignee {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-left: auto;
+  }
 }
 
 /* ==========================================================================

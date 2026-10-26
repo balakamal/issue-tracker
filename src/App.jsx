@@ -9,6 +9,7 @@ import { CreateTaskModal } from './components/modals/CreateTaskModal';
 import { ProjectManagerModal } from './components/modals/ProjectManagerModal';
 import { UserManagementModal } from './components/modals/UserManagementModal';
 import { FinderModal } from './components/common/FinderModal';
+import { MobileNavDrawer } from './components/layout/MobileNavDrawer';
 import { AuthPage } from './components/auth/AuthPage';
 import { useTasks } from './context/TaskContext';
 import { useAuth } from './context/AuthContext';
@@ -93,6 +94,7 @@ export function App() {
       />
 
       {/* Modals & Slide-over Drawers */}
+      <MobileNavDrawer onOpenFinder={() => setIsFinderOpen(true)} />
       <TaskDetailDrawer />
       <CreateTaskModal />
       <ProjectManagerModal />

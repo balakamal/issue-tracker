@@ -8,10 +8,15 @@ import {
   RotateCcw, 
   Cloud, 
   CloudOff,
-  FolderKanban
+  FolderKanban,
+  Sun,
+  Moon,
+  LogOut
 } from 'lucide-react';
 import { useTasks } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
+import { AppLogo } from '../common/AppLogo';
+import { Avatar } from '../common/Avatar';
 
 export function Sidebar({ onOpenFinder }) {
   const { 
@@ -21,17 +26,24 @@ export function Sidebar({ onOpenFinder }) {
     setIsProjectManagerOpen,
     resetData,
     isFirebaseConnected,
-    syncStatusMessage
+    syncStatusMessage,
+    theme,
+    toggleTheme
   } = useTasks();
 
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const settingsRef = useRef(null);
+  const profileRef = useRef(null);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (settingsRef.current && !settingsRef.current.contains(e.target)) {
         setIsSettingsOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setIsProfileOpen(false);
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
@@ -52,7 +64,20 @@ export function Sidebar({ onOpenFinder }) {
 
   return (
     <nav className="dock desktop-only" aria-label="Workspace navigation">
-      {/* 1. Tickets View */}
+      {/* 1. App Logo / Branding at Top of Sidenav */}
+      <button 
+        type="button" 
+        className="dock__btn dock__brand"
+        onClick={() => setActiveView('tickets')}
+        aria-label="Issue Tracker"
+      >
+        <AppLogo size={26} />
+        <span className="dock__tip">Issue Tracker <kbd>Enterprise</kbd></span>
+      </button>
+
+      <span className="dock__sep" aria-hidden="true" />
+
+      {/* 2. Tickets View */}
       <button 
         className={`dock__btn ${(activeView === 'tickets' || activeView === 'kanban' || activeView === 'list' || activeView === 'table') ? 'active' : ''}`}
         type="button" 
@@ -60,13 +85,10 @@ export function Sidebar({ onOpenFinder }) {
         aria-label="Tickets"
       >
         <LayoutGrid size={18} />
-        {visibleTasks.length > 0 && (
-          <span className="dock__count">{visibleTasks.length}</span>
-        )}
         <span className="dock__tip">Tickets Backlog</span>
       </button>
 
-      {/* 2. Metrics View */}
+      {/* 3. Metrics View */}
       <button 
         className={`dock__btn ${activeView === 'analytics' ? 'active' : ''}`}
         type="button" 
@@ -77,7 +99,7 @@ export function Sidebar({ onOpenFinder }) {
         <span className="dock__tip">Metrics & Analytics</span>
       </button>
 
-      {/* 3. User Management View (Admin Only) */}
+      {/* 4. User Management View (Admin Only) */}
       {isAdmin && (
         <button 
           className={`dock__btn ${activeView === 'users' ? 'active' : ''}`}
@@ -92,7 +114,7 @@ export function Sidebar({ onOpenFinder }) {
 
       <span className="dock__sep" aria-hidden="true" />
 
-      {/* 4. Quick Search (⌘K) */}
+      {/* 5. Quick Search (⌘K) */}
       <button 
         className="dock__btn" 
         type="button" 
@@ -103,12 +125,15 @@ export function Sidebar({ onOpenFinder }) {
         <span className="dock__tip">Search <kbd>⌘K</kbd></span>
       </button>
 
-      {/* 5. Settings Submenu (⚙️) */}
+      {/* 6. Settings Submenu (⚙️) */}
       <div className="dock-popover-wrap" ref={settingsRef}>
         <button 
           className={`dock__btn ${isSettingsOpen ? 'active' : ''}`}
           type="button" 
-          onClick={() => setIsSettingsOpen(prev => !prev)}
+          onClick={() => {
+            setIsSettingsOpen(prev => !prev);
+            setIsProfileOpen(false);
+          }}
           aria-label="Settings"
         >
           <Settings size={18} />
@@ -156,6 +181,105 @@ export function Sidebar({ onOpenFinder }) {
               )}
               <span className="dock-sync-detail">{syncStatusMessage}</span>
             </div>
+          </div>
+        )}
+      </div>
+
+      <span className="dock__sep" aria-hidden="true" />
+
+      {/* 7. Profile Avatar at Bottom of Sidenav */}
+      <div className="dock-popover-wrap" ref={profileRef}>
+        <button
+          type="button"
+          className={`dock__btn dock__profile-btn ${isProfileOpen ? 'active' : ''}`}
+          onClick={() => {
+            setIsProfileOpen(prev => !prev);
+            setIsSettingsOpen(false);
+          }}
+          aria-label="Your Profile"
+        >
+          <Avatar user={currentUser} size={30} showTooltip={false} />
+          <span className="dock__tip">
+            {currentUser?.name || 'Profile'} <kbd>{currentUser?.role || 'Member'}</kbd>
+          </span>
+        </button>
+
+        {/* Profile Popover opening to the right of the dock */}
+        {isProfileOpen && (
+          <div className="dock-profile-popover">
+            {/* Header: User Info */}
+            <div className="profile-popover-header">
+              <Avatar user={currentUser} size={40} showTooltip={false} />
+              <div className="profile-popover-info">
+                <b>{currentUser?.name || 'Workspace User'}</b>
+                <small>{currentUser?.email}</small>
+                <span className="profile-role-badge">
+                  {currentUser?.role || 'Member'}
+                </span>
+              </div>
+            </div>
+
+            <div className="profile-popover-sep" />
+
+            {/* Appearance / Theme Switcher */}
+            <div className="profile-theme-section">
+              <div className="profile-theme-label">
+                {theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}
+                <span>Theme</span>
+              </div>
+              <div className="profile-theme-toggle">
+                <button
+                  type="button"
+                  className={`profile-theme-btn ${theme === 'light' ? 'active' : ''}`}
+                  onClick={() => { if (theme !== 'light') toggleTheme(); }}
+                >
+                  <Sun size={12} />
+                  <span>Light</span>
+                </button>
+                <button
+                  type="button"
+                  className={`profile-theme-btn ${theme === 'dark' ? 'active' : ''}`}
+                  onClick={() => { if (theme !== 'dark') toggleTheme(); }}
+                >
+                  <Moon size={12} />
+                  <span>Dark</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="profile-popover-sep" />
+
+            {/* Cloud Sync Status */}
+            <div className="profile-sync-row">
+              <span 
+                className="live__dot" 
+                style={{ 
+                  background: isFirebaseConnected ? 'var(--mint)' : 'var(--lemon)',
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  display: 'inline-block'
+                }} 
+              />
+              <span className="profile-sync-txt">
+                {isFirebaseConnected ? 'Cloud Sync Active' : 'Local Storage Mode'}
+              </span>
+            </div>
+
+            <div className="profile-popover-sep" />
+
+            {/* Log Out */}
+            <button
+              type="button"
+              className="profile-logout-btn"
+              onClick={() => {
+                logout();
+                setIsProfileOpen(false);
+              }}
+            >
+              <LogOut size={14} />
+              <span>Log Out</span>
+            </button>
           </div>
         )}
       </div>

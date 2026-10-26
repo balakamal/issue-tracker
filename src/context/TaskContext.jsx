@@ -174,6 +174,26 @@ export function TaskProvider({ children }) {
   const [filterAssignee, setFilterAssignee] = useState('all'); // 'all' | 'me' | 'unassigned' | userId
   const [filterStage, setFilterStage] = useState('all'); // 'all' | stageId
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Multi-select Jira & Azure DevOps filters
+  const [selectedTypes, setSelectedTypes] = useState([]); // string[]
+  const [selectedPriorities, setSelectedPriorities] = useState([]); // string[]
+  const [selectedStages, setSelectedStages] = useState([]); // string[]
+  const [selectedAssignees, setSelectedAssignees] = useState([]); // string[]
+  
+  const toggleTypeFilter = (type) => {
+    setSelectedTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
+  };
+  const togglePriorityFilter = (priority) => {
+    setSelectedPriorities(prev => prev.includes(priority) ? prev.filter(p => p !== priority) : [...prev, priority]);
+  };
+  const toggleStageFilter = (stageId) => {
+    setSelectedStages(prev => prev.includes(stageId) ? prev.filter(s => s !== stageId) : [...prev, stageId]);
+  };
+  const toggleAssigneeFilter = (assigneeId) => {
+    setSelectedAssignees(prev => prev.includes(assigneeId) ? prev.filter(a => a !== assigneeId) : [...prev, assigneeId]);
+  };
+
   const [quickFilters, setQuickFilters] = useState({
     assignedToMe: false,
     createdByMe: false,
@@ -190,6 +210,10 @@ export function TaskProvider({ children }) {
   };
 
   const resetFilters = () => {
+    setSelectedTypes([]);
+    setSelectedPriorities([]);
+    setSelectedStages([]);
+    setSelectedAssignees([]);
     setFilterType('all');
     setFilterPriority('all');
     setFilterAssignee('all');
@@ -206,10 +230,14 @@ export function TaskProvider({ children }) {
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (filterType !== 'all') count++;
-    if (filterPriority !== 'all') count++;
-    if (filterAssignee !== 'all') count++;
-    if (filterStage !== 'all') count++;
+    count += selectedTypes.length;
+    count += selectedPriorities.length;
+    count += selectedStages.length;
+    count += selectedAssignees.length;
+    if (filterType !== 'all' && selectedTypes.length === 0) count++;
+    if (filterPriority !== 'all' && selectedPriorities.length === 0) count++;
+    if (filterAssignee !== 'all' && selectedAssignees.length === 0) count++;
+    if (filterStage !== 'all' && selectedStages.length === 0) count++;
     if (searchQuery.trim()) count++;
     if (quickFilters.assignedToMe) count++;
     if (quickFilters.createdByMe) count++;
@@ -217,7 +245,7 @@ export function TaskProvider({ children }) {
     if (quickFilters.onlyEnhancements) count++;
     if (quickFilters.criticalOnly) count++;
     return count;
-  }, [filterType, filterPriority, filterAssignee, filterStage, searchQuery, quickFilters]);
+  }, [selectedTypes, selectedPriorities, selectedStages, selectedAssignees, filterType, filterPriority, filterAssignee, filterStage, searchQuery, quickFilters]);
 
   // Sidebar Collapse (Desktop) & Mobile Off-canvas Drawer
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => storageService.getSidebarCollapsed());
@@ -294,18 +322,29 @@ export function TaskProvider({ children }) {
         return false;
       }
 
-      // 4. Type filter
-      if (filterType !== 'all' && task.type !== filterType) {
+      // 4. Type filter (multi-select + legacy)
+      if (selectedTypes.length > 0) {
+        if (!selectedTypes.includes(task.type)) return false;
+      } else if (filterType !== 'all' && task.type !== filterType) {
         return false;
       }
 
-      // 5. Priority filter
-      if (filterPriority !== 'all' && task.priority !== filterPriority) {
+      // 5. Priority filter (multi-select + legacy)
+      if (selectedPriorities.length > 0) {
+        if (!selectedPriorities.includes(task.priority)) return false;
+      } else if (filterPriority !== 'all' && task.priority !== filterPriority) {
         return false;
       }
 
-      // 6. Assignee filter (Jira / ADO)
-      if (filterAssignee !== 'all') {
+      // 6. Assignee filter (multi-select + legacy)
+      if (selectedAssignees.length > 0) {
+        const matchesAssignee = selectedAssignees.some(val => {
+          if (val === 'me') return task.assigneeId === currentUser?.id;
+          if (val === 'unassigned') return !task.assigneeId;
+          return task.assigneeId === val;
+        });
+        if (!matchesAssignee) return false;
+      } else if (filterAssignee !== 'all') {
         if (filterAssignee === 'me') {
           if (task.assigneeId !== currentUser?.id) return false;
         } else if (filterAssignee === 'unassigned') {
@@ -315,8 +354,10 @@ export function TaskProvider({ children }) {
         }
       }
 
-      // 7. Stage / State filter (Jira / ADO)
-      if (filterStage !== 'all' && task.status !== filterStage) {
+      // 7. Stage / State filter (multi-select + legacy)
+      if (selectedStages.length > 0) {
+        if (!selectedStages.includes(task.status)) return false;
+      } else if (filterStage !== 'all' && task.status !== filterStage) {
         return false;
       }
 
@@ -354,6 +395,10 @@ export function TaskProvider({ children }) {
     accessibleProjects, 
     currentUser, 
     selectedProjectId, 
+    selectedTypes,
+    selectedPriorities,
+    selectedStages,
+    selectedAssignees,
     filterType, 
     filterPriority, 
     filterAssignee, 
@@ -727,6 +772,18 @@ export function TaskProvider({ children }) {
       setFilterAssignee,
       filterStage,
       setFilterStage,
+      selectedTypes,
+      setSelectedTypes,
+      toggleTypeFilter,
+      selectedPriorities,
+      setSelectedPriorities,
+      togglePriorityFilter,
+      selectedStages,
+      setSelectedStages,
+      toggleStageFilter,
+      selectedAssignees,
+      setSelectedAssignees,
+      toggleAssigneeFilter,
       quickFilters,
       setQuickFilters,
       toggleQuickFilter,

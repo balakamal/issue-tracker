@@ -45,7 +45,8 @@ export function TableView() {
 
   return (
     <div className="table-view-container">
-      <div style={{ overflowX: 'auto' }}>
+      {/* Desktop Table View */}
+      <div className="desktop-table-container">
         <table className="dense-table">
           <thead>
             <tr>
@@ -164,6 +165,65 @@ export function TableView() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Responsive Cards List */}
+      <div className="mobile-tasks-container">
+        {sortedTasks.map(task => {
+          const project = projects.find(p => p.id === task.projectId);
+          const stage = STAGES.find(s => s.id === task.status);
+          const assignee = users.find(u => u.id === task.assigneeId);
+
+          return (
+            <div 
+              key={task.id}
+              className="mobile-task-card"
+              onClick={() => setSelectedTaskId(task.id)}
+            >
+              <div className="mobile-task-card-top">
+                <span className="mobile-task-id">{task.id}</span>
+                <div className="mobile-task-badges">
+                  <TypeBadge type={task.type} />
+                  <PriorityBadge priority={task.priority} />
+                </div>
+              </div>
+
+              <div className="mobile-task-title">{task.title}</div>
+
+              <div className="mobile-task-card-bottom">
+                <div className="mobile-task-meta-left">
+                  <span 
+                    className="mobile-task-stage" 
+                    style={{ 
+                      color: stage?.color || 'var(--sky)', 
+                      backgroundColor: `${stage?.color || 'var(--sky)'}20` 
+                    }}
+                  >
+                    {stage?.label || task.status}
+                  </span>
+
+                  {project && (
+                    <span className="mobile-task-project">
+                      <span className="project-dot-mini" style={{ backgroundColor: project.color || 'var(--sky)' }} />
+                      {project.name}
+                    </span>
+                  )}
+                </div>
+
+                <div className="mobile-task-assignee">
+                  <Avatar user={assignee} size={20} showTooltip={false} />
+                  <span>{assignee ? assignee.name.split(' ')[0] : 'Unassigned'}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        {sortedTasks.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--muted)', fontSize: 13 }}>
+            No tasks matched your current filter criteria.
+          </div>
+        )}
       </div>
     </div>
   );
