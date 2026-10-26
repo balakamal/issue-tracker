@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ShieldAlert, 
   Sparkles, 
@@ -39,6 +39,54 @@ export function CreateTaskModal() {
   const [checklistItems, setChecklistItems] = useState([]);
   const [newChecklistText, setNewChecklistText] = useState('');
 
+  // Sync state cleanly whenever the modal opens
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      const defaultProjId = selectedProjectId !== 'all' ? selectedProjectId : (projects[0]?.id || '');
+      setProjectId(defaultProjId);
+      setAssigneeId('');
+      setTitle('');
+      setPriority('medium');
+      setStatus(createInitialStage || 'ideation');
+      setIsPrivate(false);
+      setTargetDate('');
+      setProblemStatement('');
+      setProposedSolution('');
+      setChecklistItems([]);
+      setNewChecklistText('');
+    }
+  }, [isCreateModalOpen, selectedProjectId, projects, createInitialStage]);
+
+  // Find currently selected project
+  const selectedProject = useMemo(() => {
+    return projects.find(p => p.id === projectId) || projects[0] || null;
+  }, [projects, projectId]);
+
+  // Filter assignees to members of the selected project classification
+  const projectMembers = useMemo(() => {
+    if (!selectedProject) return users;
+    if (Array.isArray(selectedProject.memberIds) && selectedProject.memberIds.length > 0) {
+      const memberSet = new Set(selectedProject.memberIds);
+      if (selectedProject.createdBy) memberSet.add(selectedProject.createdBy);
+      const filtered = users.filter(u => memberSet.has(u.id));
+      return filtered.length > 0 ? filtered : users;
+    }
+    return users;
+  }, [selectedProject, users]);
+
+  // Handle switching project classification: reset assignee if not in the new project
+  const handleProjectChange = (newProjId) => {
+    setProjectId(newProjId);
+    const targetProj = projects.find(p => p.id === newProjId);
+    if (targetProj && Array.isArray(targetProj.memberIds) && targetProj.memberIds.length > 0) {
+      const memberSet = new Set(targetProj.memberIds);
+      if (targetProj.createdBy) memberSet.add(targetProj.createdBy);
+      if (assigneeId && !memberSet.has(assigneeId)) {
+        setAssigneeId(''); // Reset assignee if previous user is not a member of new project
+      }
+    }
+  };
+
   const handleAddSubtask = (e) => {
     e.preventDefault();
     if (newChecklistText.trim()) {
@@ -74,6 +122,7 @@ export function CreateTaskModal() {
 
     // Reset and close
     setTitle('');
+    setAssigneeId('');
     setProblemStatement('');
     setProposedSolution('');
     setIsCreateModalOpen(false);
@@ -143,7 +192,7 @@ export function CreateTaskModal() {
               <select
                 className="form-select"
                 value={projectId}
-                onChange={(e) => setProjectId(e.target.value)}
+                onChange={(e) => handleProjectChange(e.target.value)}
               >
                 {projects.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -169,15 +218,27 @@ export function CreateTaskModal() {
           {/* Assignee & Due Date */}
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Assignee</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label">Assignee</label>
+                {selectedProject && (
+                  <span style={{ fontSize: 11, color: 'var(--sky)', fontWeight: 600 }}>
+                    {projectMembers.length} member{projectMembers.length === 1 ? '' : 's'} in {selectedProject.name}
+                  </span>
+                )}
+              </div>
               <select
                 className="form-select"
                 value={assigneeId}
                 onChange={(e) => setAssigneeId(e.target.value)}
               >
                 <option value="">Unassigned</option>
-                {users.map(u => (
-                  <option key={u.id} value={u.id}>{u.name}</option>
+                {currentUser && projectMembers.some(u => u.id === currentUser.id) && (
+                  <option value={currentUser.id}>Assign to me ({currentUser.name})</option>
+                )}
+                {projectMembers.map(u => (
+                  <option key={u.id} value={u.id}>
+                    {u.name} ({u.role || 'Member'})
+                  </option>
                 ))}
               </select>
             </div>

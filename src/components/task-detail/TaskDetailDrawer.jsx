@@ -21,6 +21,7 @@ import { useTasks, STAGES } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
 import { TypeBadge, PriorityBadge, PrivacyBadge, ProjectChip } from '../common/Badge';
 import { Avatar } from '../common/Avatar';
+import { AssigneePicker } from '../common/AssigneePicker';
 
 export function TaskDetailDrawer() {
   const { 
@@ -326,26 +327,49 @@ export function TaskDetailDrawer() {
                     </div>
                   </div>
 
-                  {/* Creator and Target Date info */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--bg-card)' }}>
+                  {/* Assignment, Creator, and Target Date info */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    padding: '12px 16px', 
+                    borderRadius: 10, 
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-subtle)',
+                    flexWrap: 'wrap',
+                    gap: 12
+                  }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <Avatar user={creator} size={28} />
-                      <div>
-                        <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text-primary)' }}>
-                          Ideated by {creator?.name || 'Team'}
-                        </div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          Created on {new Date(currentTask.createdAt).toLocaleDateString()}
-                        </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)' }}>
+                          Assignee
+                        </span>
+                        <AssigneePicker
+                          currentAssigneeId={currentTask.assigneeId}
+                          projectId={currentTask.projectId}
+                          onAssign={(newUserId) => updateTask(currentTask.id, { assigneeId: newUserId })}
+                        />
                       </div>
                     </div>
 
-                    {currentTask.targetDate && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
-                        <Calendar size={14} />
-                        <span>Target: {new Date(currentTask.targetDate).toLocaleDateString()}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Avatar user={creator} size={26} />
+                        <div>
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Ideated by</div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>
+                            {creator?.name || 'Team'}
+                          </div>
+                        </div>
                       </div>
-                    )}
+
+                      {currentTask.targetDate && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
+                          <Calendar size={14} />
+                          <span>Target: {new Date(currentTask.targetDate).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -524,18 +548,11 @@ export function TaskDetailDrawer() {
               {/* Assignee */}
               <div className="form-group">
                 <label className="form-label">Assignee</label>
-                <select
-                  className="form-select"
-                  value={currentTask.assigneeId || ''}
-                  onChange={(e) => updateTask(currentTask.id, { assigneeId: e.target.value || null })}
-                >
-                  <option value="">Unassigned</option>
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                <AssigneePicker
+                  currentAssigneeId={currentTask.assigneeId}
+                  projectId={currentTask.projectId}
+                  onAssign={(newUserId) => updateTask(currentTask.id, { assigneeId: newUserId })}
+                />
               </div>
 
               {/* Priority */}

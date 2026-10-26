@@ -3,13 +3,15 @@ import { useTasks, STAGES } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
 import { TypeBadge, PriorityBadge, PrivacyBadge, ProjectChip } from '../common/Badge';
 import { Avatar } from '../common/Avatar';
+import { AssigneePicker } from '../common/AssigneePicker';
 import { ArrowUpDown, CheckSquare } from 'lucide-react';
 
 export function TableView() {
   const { 
     visibleTasks, 
     projects, 
-    setSelectedTaskId
+    setSelectedTaskId,
+    updateTask
   } = useTasks();
   const { users } = useAuth();
 
@@ -141,13 +143,14 @@ export function TableView() {
                   <td>
                     <PrivacyBadge isPrivate={task.isPrivate} />
                   </td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Avatar user={assignee} size={22} />
-                      <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                        {assignee ? assignee.name.split(' ')[0] : 'Unassigned'}
-                      </span>
-                    </div>
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <AssigneePicker
+                      currentAssigneeId={task.assigneeId}
+                      projectId={task.projectId}
+                      onAssign={(newUserId) => updateTask(task.id, { assigneeId: newUserId })}
+                      compact={true}
+                      align="left"
+                    />
                   </td>
                   <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                     {task.targetDate || '—'}
@@ -210,9 +213,14 @@ export function TableView() {
                   )}
                 </div>
 
-                <div className="mobile-task-assignee">
-                  <Avatar user={assignee} size={20} showTooltip={false} />
-                  <span>{assignee ? assignee.name.split(' ')[0] : 'Unassigned'}</span>
+                <div className="mobile-task-assignee" onClick={(e) => e.stopPropagation()}>
+                  <AssigneePicker
+                    currentAssigneeId={task.assigneeId}
+                    projectId={task.projectId}
+                    onAssign={(newUserId) => updateTask(task.id, { assigneeId: newUserId })}
+                    compact={true}
+                    align="right"
+                  />
                 </div>
               </div>
             </div>

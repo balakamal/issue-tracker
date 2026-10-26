@@ -2,11 +2,12 @@ import React from 'react';
 import { MessageSquare, Calendar, CheckSquare, ChevronRight } from 'lucide-react';
 import { TypeBadge, PriorityBadge, PrivacyBadge, ProjectChip } from '../common/Badge';
 import { Avatar } from '../common/Avatar';
+import { AssigneePicker } from '../common/AssigneePicker';
 import { useAuth } from '../../context/AuthContext';
 import { useTasks } from '../../context/TaskContext';
 
 export function KanbanCard({ task }) {
-  const { setSelectedTaskId, projects } = useTasks();
+  const { setSelectedTaskId, projects, updateTask } = useTasks();
   const { users } = useAuth();
 
   const assignee = users.find(u => u.id === task.assigneeId);
@@ -101,8 +102,20 @@ export function KanbanCard({ task }) {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Avatar user={assignee} size={24} />
+        <div 
+          style={{ display: 'flex', alignItems: 'center', gap: 6 }} 
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          draggable={false}
+        >
+          <AssigneePicker
+            currentAssigneeId={task.assigneeId}
+            projectId={task.projectId}
+            onAssign={(newUserId) => updateTask(task.id, { assigneeId: newUserId })}
+            compact={true}
+            align="right"
+            direction="up"
+          />
         </div>
       </div>
     </div>

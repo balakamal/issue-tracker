@@ -200,11 +200,18 @@ export function AuthProvider({ children }) {
   };
 
   // Deduplicate users list by email and id so each account only appears once
+  // Always prioritize the active currentUser's record so currentUser.id is preserved
   const uniqueUsers = React.useMemo(() => {
     const seenEmails = new Set();
     const seenIds = new Set();
     const result = [];
-    for (const u of users) {
+
+    // Prioritize currentUser first if present
+    const sourceUsers = currentUser 
+      ? [currentUser, ...users.filter(u => u.id !== currentUser.id && u.email?.toLowerCase() !== currentUser.email?.toLowerCase())]
+      : users;
+
+    for (const u of sourceUsers) {
       const emailNorm = (u.email || '').toLowerCase().trim();
       if (emailNorm && seenEmails.has(emailNorm)) continue;
       if (u.id && seenIds.has(u.id)) continue;
@@ -213,7 +220,7 @@ export function AuthProvider({ children }) {
       result.push(u);
     }
     return result;
-  }, [users]);
+  }, [users, currentUser]);
 
   return (
     <AuthContext.Provider value={{
