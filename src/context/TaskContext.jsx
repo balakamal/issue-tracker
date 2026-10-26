@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import { storageService } from '../services/storageService';
 import { firebaseService } from '../services/firebase';
@@ -16,6 +17,8 @@ export const STAGES = [
 
 export function TaskProvider({ children }) {
   const { currentUser, users } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   // Theme state
   const [theme, setThemeState] = useState(() => storageService.getTheme());
@@ -221,6 +224,9 @@ export function TaskProvider({ children }) {
     } catch (e) {
       // ignore
     }
+    if (location.pathname === '/tickets' || location.pathname === '/tickets/table' || location.pathname === '/tickets/board') {
+      navigate(`/tickets/${mode}`, { replace: true });
+    }
   };
 
   // Global & Jira / Azure DevOps style filters
@@ -325,6 +331,14 @@ export function TaskProvider({ children }) {
     const normalized = (viewId === 'kanban' || viewId === 'list' || viewId === 'ideation') ? 'tickets' : viewId;
     setActiveView(normalized);
     setIsMobileSidebarOpen(false);
+
+    if (normalized === 'tickets') {
+      navigate('/tickets');
+    } else if (normalized === 'analytics') {
+      navigate('/analytics');
+    } else if (normalized === 'users') {
+      navigate('/users');
+    }
   };
 
   const handleSelectProject = (projectId) => {
@@ -334,6 +348,58 @@ export function TaskProvider({ children }) {
   
   // Active modals and selected task detail drawer
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+
+  const handleSetSelectedTaskId = (id) => {
+    setSelectedTaskId(id);
+    if (id) {
+      if (location.pathname !== `/task/${id}`) {
+        navigate(`/task/${id}`);
+      }
+    } else {
+      if (location.pathname.match(/\/(?:task|tasks|tickets)\/[^/]+/i)) {
+        navigate('/tickets');
+      }
+    }
+  };
+
+  // Synchronize browser URL route to activeView, ticketsViewMode, and selectedTaskId
+  useEffect(() => {
+    const path = location.pathname;
+
+    // Check task deep link: /task/:id, /tasks/:id, /tickets/:id
+    const taskMatch = path.match(/\/(?:task|tasks|tickets)\/([a-zA-Z0-9_-]+)/i);
+    if (taskMatch) {
+      const routeTaskId = taskMatch[1];
+      if (selectedTaskId !== routeTaskId) {
+        setSelectedTaskId(routeTaskId);
+      }
+      if (activeView !== 'tickets') {
+        setActiveView('tickets');
+      }
+      return;
+    }
+
+    // View routes
+    if (path === '/analytics' || path.startsWith('/analytics/')) {
+      if (activeView !== 'analytics') setActiveView('analytics');
+      if (selectedTaskId) setSelectedTaskId(null);
+    } else if (path === '/users' || path.startsWith('/users/')) {
+      if (activeView !== 'users') setActiveView('users');
+      if (selectedTaskId) setSelectedTaskId(null);
+    } else if (path === '/tickets/board' || path === '/board') {
+      if (activeView !== 'tickets') setActiveView('tickets');
+      if (ticketsViewMode !== 'board') setTicketsViewModeState('board');
+      if (selectedTaskId) setSelectedTaskId(null);
+    } else if (path === '/tickets/table' || path === '/table') {
+      if (activeView !== 'tickets') setActiveView('tickets');
+      if (ticketsViewMode !== 'table') setTicketsViewModeState('table');
+      if (selectedTaskId) setSelectedTaskId(null);
+    } else if (path === '/tickets' || path === '/') {
+      if (activeView !== 'tickets') setActiveView('tickets');
+      if (selectedTaskId) setSelectedTaskId(null);
+    }
+  }, [location.pathname]);
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createInitialStage, setCreateInitialStage] = useState('ideation');
   const [isProjectManagerOpen, setIsProjectManagerOpen] = useState(false);
@@ -862,7 +928,7 @@ export function TaskProvider({ children }) {
       activeMobileStage,
       setActiveMobileStage,
       selectedTaskId,
-      setSelectedTaskId,
+      setSelectedTaskId: handleSetSelectedTaskId,
       selectedTask,
       isCreateModalOpen,
       setIsCreateModalOpen,

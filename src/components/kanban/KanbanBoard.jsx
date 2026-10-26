@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { useTasks, STAGES } from '../../context/TaskContext';
 import { KanbanCard } from './KanbanCard';
 
-export function KanbanBoard() {
+export const KanbanBoard = React.memo(function KanbanBoard() {
   const { 
     visibleTasks, 
     moveTaskStage, 
@@ -130,4 +130,6 @@ export function KanbanBoard() {
       </div>
     </div>
   );
-}
+});
+
+export default KanbanBoard;

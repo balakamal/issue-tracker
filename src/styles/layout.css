@@ -923,8 +923,6 @@
 
 .view-transition-wrapper {
   width: 100%;
-  animation: viewFadeIn 0.22s var(--ease-spring) forwards;
-  will-change: opacity;
 }
 
 @keyframes viewFadeIn {

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/layout/Sidebar';
 import { Topbar } from './components/layout/Topbar';
 import { TicketsView } from './components/tickets/TicketsView';
@@ -11,51 +12,40 @@ import { UserManagementModal } from './components/modals/UserManagementModal';
 import { FinderModal } from './components/common/FinderModal';
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer';
 import { AuthPage } from './components/auth/AuthPage';
+import { WorkspaceLoadingScreen } from './components/common/WorkspaceLoadingScreen';
 import { useTasks } from './context/TaskContext';
 import { useAuth } from './context/AuthContext';
-import { ShieldCheck, RefreshCw } from 'lucide-react';
 
 export function App() {
   const { 
-    activeView, 
     theme
   } = useTasks();
   const { isAuthenticated, isLoadingSession } = useAuth();
   const [isFinderOpen, setIsFinderOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Loading state while checking persistent rotating tokens
+  // Preserve intended deep-link destination for unauthenticated users
+  useEffect(() => {
+    if (!isAuthenticated && location.pathname !== '/login' && location.pathname !== '/') {
+      sessionStorage.setItem('vantage_auth_redirect', location.pathname);
+    }
+  }, [isAuthenticated, location.pathname]);
+
+  // Navigate to saved destination once authentication resolves
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirectPath = sessionStorage.getItem('vantage_auth_redirect');
+      if (redirectPath) {
+        sessionStorage.removeItem('vantage_auth_redirect');
+        navigate(redirectPath, { replace: true });
+      }
+    }
+  }, [isAuthenticated]);
+
+  // Bespoke theme-aware Vantage Quantum Orbit loading screen
   if (isLoadingSession) {
-    return (
-      <div style={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'var(--bg)',
-        color: 'var(--text)',
-        flexDirection: 'column',
-        gap: 16
-      }}>
-        <div style={{
-          width: 48,
-          height: 48,
-          borderRadius: 16,
-          background: 'var(--pill)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--on-pill)',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)'
-        }}>
-          <ShieldCheck size={26} />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: 'var(--muted)' }}>
-          <RefreshCw size={14} className="animate-spin" color="var(--primary)" />
-          <span>Validating Enterprise Workspace Session...</span>
-        </div>
-      </div>
-    );
+    return <WorkspaceLoadingScreen />;
   }
 
   // Not authenticated: render the login / registration page
@@ -63,7 +53,7 @@ export function App() {
     return <AuthPage />;
   }
 
-  // Authenticated: render full workspace with Corbel styling
+  // Authenticated: render full workspace with Corbel styling and full URL routes
   return (
     <div className="app-container" data-theme={theme}>
       {/* Corbel Ambient Glowing Mesh Background with Floating Orbs */}
@@ -73,7 +63,7 @@ export function App() {
         <i className="mesh__c" />
       </div>
 
-      {/* Full-Width Topbar Header: Branding Truly at Top-Left, Profile at Top-Right */}
+      {/* Full-Width Topbar Header */}
       <Topbar onOpenFinder={() => setIsFinderOpen(true)} />
 
       {/* Main Workspace Body with Left Dock and Content Area */}
@@ -81,12 +71,26 @@ export function App() {
         {/* Floating Left Dock Navigation */}
         <Sidebar onOpenFinder={() => setIsFinderOpen(true)} />
 
-        {/* Scrollable View Container */}
+        {/* Scrollable View Container with Semantic Routes */}
         <main className="main-content-scrollable">
-          <div key={activeView} className="view-transition-wrapper">
-            {(activeView === 'tickets' || activeView === 'kanban' || activeView === 'list' || activeView === 'table') && <TicketsView />}
-            {activeView === 'analytics' && <AnalyticsDashboard />}
-            {activeView === 'users' && <UserManagementView />}
+          <div className="view-transition-wrapper">
+            <Routes>
+              <Route path="/" element={<Navigate to="/tickets" replace />} />
+              <Route path="/tickets" element={<TicketsView />} />
+              <Route path="/tickets/board" element={<TicketsView />} />
+              <Route path="/tickets/table" element={<TicketsView />} />
+              <Route path="/board" element={<Navigate to="/tickets/board" replace />} />
+              <Route path="/table" element={<Navigate to="/tickets/table" replace />} />
+              <Route path="/analytics" element={<AnalyticsDashboard />} />
+              <Route path="/metrics" element={<Navigate to="/analytics" replace />} />
+              <Route path="/users" element={<UserManagementView />} />
+              <Route path="/team" element={<Navigate to="/users" replace />} />
+              <Route path="/task/:taskId" element={<TicketsView />} />
+              <Route path="/tasks/:taskId" element={<TicketsView />} />
+              <Route path="/tickets/:taskId" element={<TicketsView />} />
+              <Route path="/login" element={<Navigate to="/tickets" replace />} />
+              <Route path="*" element={<Navigate to="/tickets" replace />} />
+            </Routes>
           </div>
         </main>
       </div>
@@ -106,4 +110,5 @@ export function App() {
     </div>
   );
 }
+
 export default App;

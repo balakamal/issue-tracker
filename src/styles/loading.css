@@ -1,0 +1,346 @@
+/* ==========================================================================
+   Vantage Loop - Quantum Orbit Loading Screen Styles
+   Modern, theme-aware orbital loader with ambient mesh & laser progress
+   ========================================================================== */
+
+.quantum-loader-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg, #0c1216);
+  color: var(--text, #ededeb);
+  overflow: hidden;
+  z-index: 99999;
+  font-family: var(--font, 'Urbanist', sans-serif);
+}
+
+/* Ambient Glowing Background Orbs */
+.quantum-loader-mesh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.85;
+}
+
+.quantum-loader-mesh i {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+
+.quantum-loader-mesh .mesh__a {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, var(--mesh-a, rgba(70, 140, 200, 0.25)) 0%, transparent 70%);
+  top: 15%;
+  left: 20%;
+  animation: floatOrbA 14s ease-in-out infinite alternate;
+}
+
+.quantum-loader-mesh .mesh__b {
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, var(--mesh-b, rgba(46, 160, 128, 0.2)) 0%, transparent 70%);
+  bottom: 20%;
+  right: 25%;
+  animation: floatOrbB 16s ease-in-out infinite alternate;
+}
+
+.quantum-loader-mesh .mesh__c {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, var(--mesh-c, rgba(230, 120, 95, 0.15)) 0%, transparent 70%);
+  top: 45%;
+  right: 15%;
+  animation: floatOrbA 18s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatOrbA {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -30px) scale(1.1); }
+  100% { transform: translate(-30px, 40px) scale(0.95); }
+}
+
+@keyframes floatOrbB {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 30px) scale(1.08); }
+  100% { transform: translate(30px, -20px) scale(0.92); }
+}
+
+/* Central Card */
+.quantum-loader-card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 44px 48px;
+  max-width: 420px;
+  width: 90%;
+  background: var(--glass, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.09));
+  border-radius: 28px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 24px 64px -20px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--rim, rgba(255, 255, 255, 0.06)) inset;
+  animation: quantumFadeIn 0.5s var(--ease-spring, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+@keyframes quantumFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Orbit Visualizer Container */
+.quantum-orbit-stage {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Outer Concentric SVG Rings */
+.quantum-orbit-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.quantum-ring-outer {
+  transform-origin: center;
+  animation: orbitSpinClockwise 12s linear infinite;
+}
+
+.quantum-ring-inner {
+  transform-origin: center;
+  animation: orbitSpinCounterClockwise 8s linear infinite;
+}
+
+@keyframes orbitSpinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbitSpinCounterClockwise {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Center Brand Glyph */
+.quantum-center-emblem {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 0 32px rgba(37, 99, 235, 0.45), 0 10px 24px rgba(0, 0, 0, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  animation: emblemPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes emblemPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 28px rgba(37, 99, 235, 0.4), 0 8px 20px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 40px rgba(121, 182, 227, 0.65), 0 12px 28px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Orbiting Satellites / Nodes */
+.quantum-satellite-a {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 12px #38bdf8, 0 0 4px #ffffff;
+  top: 50%;
+  left: 50%;
+  margin-top: -4px;
+  margin-left: -4px;
+  transform-origin: 4px 4px;
+  animation: satelliteOrbitA 4.5s linear infinite;
+}
+
+.quantum-satellite-b {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px #34d399, 0 0 3px #ffffff;
+  top: 50%;
+  left: 50%;
+  margin-top: -3px;
+  margin-left: -3px;
+  transform-origin: 3px 3px;
+  animation: satelliteOrbitB 3.2s linear infinite reverse;
+}
+
+@keyframes satelliteOrbitA {
+  from {
+    transform: rotate(0deg) translateX(52px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(52px) rotate(-360deg);
+  }
+}
+
+@keyframes satelliteOrbitB {
+  from {
+    transform: rotate(180deg) translateX(42px) rotate(-180deg);
+  }
+  to {
+    transform: rotate(540deg) translateX(42px) rotate(-540deg);
+  }
+}
+
+/* Typography & Brand Header */
+.quantum-loader-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.quantum-brand-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--text, #ededeb) 30%, var(--primary, #79b6e3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantum-status-ticker {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted, #a7b3bb);
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.quantum-status-ticker.fade-out {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.quantum-status-ticker.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Laser Progress Bar */
+.quantum-progress-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--well, rgba(255, 255, 255, 0.08));
+  overflow: hidden;
+  position: relative;
+}
+
+.quantum-laser-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent 0%, #38bdf8 50%, #34d399 100%);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+  animation: laserSweep 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes laserSweep {
+  0% {
+    left: -40%;
+    width: 30%;
+  }
+  50% {
+    left: 40%;
+    width: 50%;
+  }
+  100% {
+    left: 100%;
+    width: 30%;
+  }
+}
+
+/* Security Pill Footer */
+.quantum-security-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--surface-2, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  font-size: 11px;
+  font-family: var(--mono, monospace);
+  color: var(--faint, #8d9aa3);
+}
+
+.quantum-beacon-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  position: relative;
+}
+
+.quantum-beacon-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid #34d399;
+  opacity: 0.7;
+  animation: beaconPulse 1.8s ease-out infinite;
+}
+
+@keyframes beaconPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}

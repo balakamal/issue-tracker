@@ -15,13 +15,17 @@ import {
   ShieldAlert,
   ChevronDown,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Share2
 } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTasks, STAGES } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
 import { TypeBadge, PriorityBadge, PrivacyBadge, ProjectChip } from '../common/Badge';
 import { Avatar } from '../common/Avatar';
 import { AssigneePicker } from '../common/AssigneePicker';
+import { useTaskMetaTags } from '../../hooks/useTaskMetaTags';
+import { ShareTaskModal } from '../modals/ShareTaskModal';
 
 export function TaskDetailDrawer() {
   const { 
@@ -39,9 +43,12 @@ export function TaskDetailDrawer() {
   } = useTasks();
 
   const { users, currentUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [displayedTask, setDisplayedTask] = useState(selectedTask);
   const [isClosing, setIsClosing] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const closeTimerRef = useRef(null);
 
   const [activeTab, setActiveTab] = useState('ideation'); // 'ideation' | 'checklist' | 'discussion' | 'metadata'
@@ -99,6 +106,9 @@ export function TaskDetailDrawer() {
 
   const handleClose = () => {
     setSelectedTaskId(null);
+    if (location.pathname.match(/\/(?:task|tasks|tickets)\/[^/]+/i)) {
+      navigate('/tickets');
+    }
   };
 
   useEffect(() => {
@@ -109,9 +119,11 @@ export function TaskDetailDrawer() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [displayedTask, isClosing]);
+  }, [displayedTask, isClosing, location.pathname]);
 
   const currentTask = selectedTask || displayedTask;
+  useTaskMetaTags(currentTask);
+
   if (!currentTask) return null;
 
   const project = projects.find(p => p.id === currentTask.projectId);
@@ -197,6 +209,18 @@ export function TaskDetailDrawer() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Share work item button */}
+            <button
+              type="button"
+              className="filter-pill-button"
+              style={{ height: 28, fontSize: 11.5 }}
+              onClick={() => setIsShareModalOpen(true)}
+              title="Share work item link & view social preview"
+            >
+              <Share2 size={12} color="var(--primary)" />
+              <span>Share</span>
+            </button>
+
             {/* Privacy toggle button */}
             <button
               className={`filter-pill-button ${currentTask.isPrivate ? 'active' : ''}`}
@@ -678,6 +702,13 @@ export function TaskDetailDrawer() {
           </div>
         </div>
       </div>
+
+      {/* Share Work Item Dialog with OG Preview */}
+      <ShareTaskModal 
+        task={currentTask}
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+      />
     </div>
   );
 }

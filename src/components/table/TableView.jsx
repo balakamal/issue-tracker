@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTasks, STAGES } from '../../context/TaskContext';
 import { useAuth } from '../../context/AuthContext';
 import { TypeBadge, PriorityBadge, PrivacyBadge, ProjectChip } from '../common/Badge';
@@ -6,7 +6,7 @@ import { Avatar } from '../common/Avatar';
 import { AssigneePicker } from '../common/AssigneePicker';
 import { ArrowUpDown, CheckSquare } from 'lucide-react';
 
-export function TableView() {
+export const TableView = React.memo(function TableView() {
   const { 
     visibleTasks, 
     projects, 
@@ -27,23 +27,25 @@ export function TableView() {
     }
   };
 
-  const sortedTasks = [...visibleTasks].sort((a, b) => {
-    let aVal = a[sortField];
-    let bVal = b[sortField];
+  const sortedTasks = useMemo(() => {
+    return [...visibleTasks].sort((a, b) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
 
-    if (sortField === 'progress') {
-      const aDone = (a.checklist || []).filter(c => c.completed).length;
-      const aTotal = (a.checklist || []).length;
-      const bDone = (b.checklist || []).filter(c => c.completed).length;
-      const bTotal = (b.checklist || []).length;
-      aVal = aTotal > 0 ? aDone / aTotal : 0;
-      bVal = bTotal > 0 ? bDone / bTotal : 0;
-    }
+      if (sortField === 'progress') {
+        const aDone = (a.checklist || []).filter(c => c.completed).length;
+        const aTotal = (a.checklist || []).length;
+        const bDone = (b.checklist || []).filter(c => c.completed).length;
+        const bTotal = (b.checklist || []).length;
+        aVal = aTotal > 0 ? aDone / aTotal : 0;
+        bVal = bTotal > 0 ? bDone / bTotal : 0;
+      }
 
-    if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
-    if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
-    return 0;
-  });
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [visibleTasks, sortField, sortOrder]);
 
   return (
     <div className="table-view-container">
@@ -235,4 +237,6 @@ export function TableView() {
       </div>
     </div>
   );
-}
+});
+
+export default TableView;
