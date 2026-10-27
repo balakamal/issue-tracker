@@ -32,3 +32,4 @@ dist-ssr
 
 # Temporary screenshot captures
 *.png
+!public/og-banner.png

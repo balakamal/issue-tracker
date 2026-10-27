@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&amp;family=Urbanist:wght@500;600;700;800&amp;display=swap');
+      .font-sans { font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c1216" />
+      <stop offset="50%" stop-color="#11181f" />
+      <stop offset="100%" stop-color="#172129" />
+    </linearGradient>
+    <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+    <filter id="ambient" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="80" result="blur" />
+    </filter>
+  </defs>
+
+  <!-- Background Base (Corbel dark slate obsidian #0c1216) -->
+  <rect width="1200" height="630" fill="url(#bgGrad)" />
+
+  <!-- Corbel Ambient Mesh Glows (Soft muted sapphire & mint, no neon) -->
+  <circle cx="200" cy="140" r="220" fill="rgba(70, 140, 200, 0.16)" filter="url(#ambient)" />
+  <circle cx="1040" cy="480" r="240" fill="rgba(46, 160, 128, 0.12)" filter="url(#ambient)" />
+
+  <!-- Uniform Subtle Card Frame (1px border all around, strictly following AGENTS.md) -->
+  <rect x="36" y="36" width="1128" height="558" rx="20" fill="rgba(23, 33, 41, 0.65)" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1" />
+
+  <!-- Top Header Branding Row -->
+  <g transform="translate(84, 90)">
+    <!-- App Logo Squircle -->
+    <rect width="64" height="64" rx="18" fill="url(#logoGrad)" />
+    <rect x="1" y="1" width="62" height="62" rx="17" stroke="rgba(255, 255, 255, 0.22)" stroke-width="1.5" fill="none" />
+    <circle cx="32" cy="32" r="16.5" stroke="rgba(255, 255, 255, 0.35)" stroke-width="3" fill="none" />
+    <path d="M32 15.5 C41.1 15.5 48.5 22.9 48.5 32 C48.5 41.1 41.1 48.5 32 48.5" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" fill="none" />
+    <path d="M24 32.5 L29.5 38 L40.5 26" stroke="#FFFFFF" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <circle cx="45" cy="18.5" r="3.5" fill="#34D399" />
+
+    <!-- App Name with Corbel Typography -->
+    <text x="84" y="38" fill="#ededeb" class="font-sans" font-size="30" font-weight="800" letter-spacing="0.5">
+      Issue Tracker
+    </text>
+    <text x="84" y="58" fill="#79b6e3" class="font-sans" font-size="14" font-weight="700" letter-spacing="2">
+      ENGINEERING WORKSPACE
+    </text>
+  </g>
+
+  <!-- Feature Pills Row -->
+  <g transform="translate(84, 210)">
+    <!-- Pill 1: Enhancements -->
+    <rect width="180" height="42" rx="10" fill="rgba(111, 211, 176, 0.12)" stroke="rgba(111, 211, 176, 0.28)" stroke-width="1" />
+    <circle cx="24" cy="21" r="4.5" fill="#6fd3b0" />
+    <text x="40" y="26" fill="#6fd3b0" class="font-sans" font-size="14" font-weight="700">
+      Enhancements
+    </text>
+
+    <!-- Pill 2: Loopholes -->
+    <g transform="translate(196, 0)">
+      <rect width="160" height="42" rx="10" fill="rgba(240, 140, 125, 0.12)" stroke="rgba(240, 140, 125, 0.28)" stroke-width="1" />
+      <circle cx="24" cy="21" r="4.5" fill="#f08c7d" />
+      <text x="40" y="26" fill="#f08c7d" class="font-sans" font-size="14" font-weight="700">
+        Loopholes
+      </text>
+    </g>
+
+    <!-- Pill 3: Kanban & Matrix -->
+    <g transform="translate(372, 0)">
+      <rect width="190" height="42" rx="10" fill="rgba(121, 182, 227, 0.12)" stroke="rgba(121, 182, 227, 0.28)" stroke-width="1" />
+      <circle cx="24" cy="21" r="4.5" fill="#79b6e3" />
+      <text x="40" y="26" fill="#79b6e3" class="font-sans" font-size="14" font-weight="700">
+        Interactive Board
+      </text>
+    </g>
+  </g>
+
+  <!-- Main Headline Title -->
+  <g transform="translate(84, 320)">
+    <text x="0" y="44" fill="#ededeb" class="font-sans" font-size="46" font-weight="800">
+      Engineering Backlog &amp; Sprint Tracker
+    </text>
+    <text x="0" y="96" fill="#a7b3bb" class="font-sans" font-size="22" font-weight="500">
+      Collaborative issue tracking, architecture reviews, and sprint execution.
+    </text>
+  </g>
+
+  <!-- Footer Metadata Tags Row -->
+  <g transform="translate(84, 490)">
+    <!-- Production Deployment Pill -->
+    <rect x="0" y="0" width="260" height="42" rx="10" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.10)" stroke-width="1" />
+    <circle cx="22" cy="21" r="4.5" fill="#6fd3b0" />
+    <text x="36" y="26" fill="#ededeb" class="font-sans" font-size="13.5" font-weight="600">
+      Live on GitHub Pages
+    </text>
+
+    <!-- Domain Pill -->
+    <g transform="translate(276, 0)">
+      <rect x="0" y="0" width="280" height="42" rx="10" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1" />
+      <text x="20" y="26" fill="#a7b3bb" class="font-mono" font-size="13" font-weight="500">
+        balakamal.github.io/issue-tracker
+      </text>
+    </g>
+  </g>
+</svg>

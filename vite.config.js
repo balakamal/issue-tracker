@@ -112,10 +112,10 @@ function ogTagsPlugin() {
           .replace(/<title>.*?<\/title>/i, `<title>[${taskId}] Task Details | Issue Tracker</title>`)
           .replace(/<meta property="og:title" content=".*?" \/>/i, `<meta property="og:title" content="[${taskId}] Work Item • Issue Tracker" />`)
           .replace(/<meta property="og:description" content=".*?" \/>/i, `<meta property="og:description" content="View task specifications, implementation checklist, and discussion for work item ${taskId} on Issue Tracker." />`)
-          .replace(/<meta property="og:image" content=".*?" \/>/i, `<meta property="og:image" content="/api/og/${taskId}" />`)
+          .replace(/<meta property="og:image" content=".*?" \/>/i, `<meta property="og:image" content="https://balakamal.github.io/issue-tracker/og-banner.png" />`)
           .replace(/<meta name="twitter:title" content=".*?" \/>/i, `<meta name="twitter:title" content="[${taskId}] Work Item • Issue Tracker" />`)
           .replace(/<meta name="twitter:description" content=".*?" \/>/i, `<meta name="twitter:description" content="View task specifications, implementation checklist, and discussion for work item ${taskId} on Issue Tracker." />`)
-          .replace(/<meta name="twitter:image" content=".*?" \/>/i, `<meta name="twitter:image" content="/api/og/${taskId}" />`);
+          .replace(/<meta name="twitter:image" content=".*?" \/>/i, `<meta name="twitter:image" content="https://balakamal.github.io/issue-tracker/og-banner.png" />`);
       }
       return html;
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, Share2, FileCode, FileText, Globe } from 'lucide-react';
 import { AppLogo } from '../common/AppLogo';
+import { getTaskOgDataUri } from '../../utils/ogImageGenerator';
 
 export function ShareTaskModal({ task, isOpen, onClose }) {
   const [copiedType, setCopiedType] = useState(null); // 'url' | 'markdown' | 'summary'
@@ -19,8 +20,9 @@ export function ShareTaskModal({ task, isOpen, onClose }) {
   if (!isOpen || !task) return null;
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const taskUrl = `${origin}/task/${task.id}`;
-  const ogImageUrl = `${origin}/api/og/${task.id}`;
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+  const taskUrl = `${origin}${base}/task/${task.id}`;
+  const ogImageUrl = getTaskOgDataUri(task);
 
   const typeLabel = task.type === 'loophole' ? 'Loophole' : 'Enhancement';
   const priorityLabel = (task.priority || 'medium').toUpperCase();
